@@ -2,13 +2,11 @@
 title: 使用sidekick为minio集群提供负载均衡和高速缓存
 description: 
 published: true
-date: 2022-09-03T07:25:24.757Z
+date: 2022-09-03T07:27:17.770Z
 tags: minio, sidekick, loadbalancing
 editor: markdown
 dateCreated: 2022-09-03T07:25:24.757Z
 ---
-
-# 使用sidekick为minio集群提供负载均衡和高速缓存
 
 现在很多云原生应用程序都是用http作为主要的传输机制，但是为web应用程序构建的负载均衡却不能满足一些高性能的场景。如nginx，haproxy虽然能够处理负载的应用场景，但是让它们去支撑一些高性能和一些数据密集型工作，却不能很好的应用。
 
