@@ -2,13 +2,13 @@
 title: ubuntu 20.04为mcx353a-fcbt安装驱动并配置IPoIB
 description: 
 published: true
-date: 2022-09-03T07:21:08.750Z
+date: 2022-09-03T07:27:42.824Z
 tags: install, ubuntu, ipoib, infiniband
 editor: markdown
 dateCreated: 2022-09-03T07:21:08.750Z
 ---
 
-# ubuntu 20.04为mcx353a-fcbt安装驱动并配置IPoIB
+
 
 先在[Linux InfiniBand Drivers (nvidia.com)](https://network.nvidia.com/products/infiniband-drivers/linux/mlnx_ofed/)搜索适合的驱动，由于mellanox ConnectX-3 MCX353A-FCBT是比较久的版本，所以从MLNX_OFED 5.1开始，就不开始支持下属版本
 
