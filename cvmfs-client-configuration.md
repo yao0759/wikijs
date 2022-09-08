@@ -2,7 +2,7 @@
 title: cvmfs客户端配置
 description: 
 published: true
-date: 2022-09-08T15:21:58.469Z
+date: 2022-09-08T15:22:38.952Z
 tags: ubuntu, centos, cvmfs
 editor: markdown
 dateCreated: 2022-09-08T15:21:58.469Z
@@ -28,7 +28,7 @@ sudo yum install -y cvmfs
 从stratum0传输公钥到客户端上
 
 ```
-scp /etc/cvmfs/keys/cvmfs.example.com.pub test@10.141.255.210:/home/test
+scp /etc/cvmfs/keys/cvmfs.example.com.pub test@172.16.0.2:/home/test
 ```
 
 创建客户端配置文件
