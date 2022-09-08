@@ -2,7 +2,7 @@
 title: ubuntu 18.04安装cvmfs stratum 0
 description: 
 published: true
-date: 2022-09-08T15:10:29.671Z
+date: 2022-09-08T15:23:38.748Z
 tags: install, ubuntu, cvmfs
 editor: markdown
 dateCreated: 2022-09-08T15:10:29.671Z
@@ -71,7 +71,7 @@ vim /etc/cron.d/cvmfs_resign
 ```
 # Created by cvmfs_server.
 CVMFS_CREATOR_VERSION=143
-CVMFS_REPOSITORY_NAME=cvmfs.singleparticle.net
+CVMFS_REPOSITORY_NAME=cvmfs.example.com
 CVMFS_REPOSITORY_TYPE=stratum0
 CVMFS_USER=spadm
 CVMFS_UNION_DIR=/cvmfs/cvmfs.example.com
