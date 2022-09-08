@@ -2,13 +2,13 @@
 title: ubuntu 20.04安装cvmfs stratum 1
 description: 
 published: true
-date: 2022-09-08T15:13:57.378Z
+date: 2022-09-08T15:14:46.052Z
 tags: install, ubuntu, cvmfs
 editor: markdown
 dateCreated: 2022-09-08T15:13:57.378Z
 ---
 
-**我这里使用的系统发行版本是ubuntu 20.04，所以stratum 0的安装步骤如下**
+**我这里使用的系统发行版本是ubuntu 20.04，所以stratum 1的安装步骤如下**
 
 ```
 wget https://ecsft.cern.ch/dist/cvmfs/cvmfs-release/cvmfs-release-latest_all.deb
