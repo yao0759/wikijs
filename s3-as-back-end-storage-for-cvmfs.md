@@ -2,7 +2,7 @@
 title: S3 as back-end storage for CVMFS
 description: 
 published: true
-date: 2022-09-09T14:00:56.558Z
+date: 2022-09-09T14:01:23.842Z
 tags: install, cvmfs, s3
 editor: markdown
 dateCreated: 2022-09-09T14:00:56.558Z
@@ -96,7 +96,7 @@ cvmfs_server mkfs  -u S3,/mnt,suffix@/etc/cvmfs/s3.conf -w http://********.s3.am
 这里我执行的是
 
 ```
-cvmfs_server mkfs  -u S3,/mnt,cvmfs@/etc/cvmfs/s3.conf -w http://new-bucket-57749cd7.s3.amazonaws.com/cvmfs  public.example.com
+cvmfs_server mkfs  -u S3,/mnt,cvmfs@/etc/cvmfs/s3.conf -w http://********.s3.amazonaws.com/cvmfs  public.example.com
 ```
 
 
