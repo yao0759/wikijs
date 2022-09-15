@@ -1,8 +1,8 @@
 ---
 title: slurm--大型集群管理指南
-description: slurm中文系列，机翻，有问题可以指出
+description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出
 published: true
-date: 2022-09-15T13:50:55.085Z
+date: 2022-09-15T13:53:42.615Z
 tags: slurm, hpc
 editor: markdown
 dateCreated: 2022-09-15T10:52:38.893Z
