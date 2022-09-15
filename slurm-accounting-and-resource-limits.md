@@ -1,8 +1,8 @@
 ---
 title: slurm--核算和资源限制
-description: slurm中文翻译系列，机翻，有错误可以支持
+description: slurm中文翻译系列，机翻，有错误可以指出
 published: true
-date: 2022-09-15T10:26:05.446Z
+date: 2022-09-15T10:27:12.667Z
 tags: slurm
 editor: markdown
 dateCreated: 2022-09-15T10:11:48.437Z
