@@ -1,8 +1,8 @@
 ---
 title: slurm--cgoup v2插件
-description: 
+description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出
 published: true
-date: 2022-09-18T10:35:45.968Z
+date: 2022-09-18T10:36:28.025Z
 tags: slurm, hpc
 editor: markdown
 dateCreated: 2022-09-18T10:35:45.968Z
