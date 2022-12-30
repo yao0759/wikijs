@@ -1,8 +1,8 @@
 ---
-title:  0 0 0 ubuntu 20.04如何沙箱化systemd服务
+title: ubuntu 20.04如何沙箱化systemd服务
 description: 
 published: true
-date: 2022-12-30T15:29:20.998Z
+date: 2022-12-30T15:30:16.450Z
 tags: systemd, ubuntu, sandbox
 editor: markdown
 dateCreated: 2022-12-30T15:29:20.998Z
