@@ -2,7 +2,7 @@
 title: 如何使用SysRq组合键修复无响应的Linux系统
 description: 
 published: true
-date: 2023-02-18T13:19:47.705Z
+date: 2023-02-18T13:25:36.695Z
 tags: sysrq
 editor: markdown
 dateCreated: 2023-02-18T13:16:53.708Z
