@@ -2,7 +2,7 @@
 title: 如何使用SysRq组合键修复无响应的Linux系统
 description: 
 published: true
-date: 2023-02-18T13:16:53.708Z
+date: 2023-02-18T13:19:47.705Z
 tags: sysrq
 editor: markdown
 dateCreated: 2023-02-18T13:16:53.708Z
@@ -84,3 +84,7 @@ dateCreated: 2023-02-18T13:16:53.708Z
 当内存不足时，一些特定的进程会使计算机的工作陷入瓶颈。在这样的情况下，SysRq组合键可能会派上用场。另外，你也可以重启系统，立即杀死可能导致该问题的进程。但这并不是一个可行的选择。
 
 你也可以使用ps命令监控你的Linux系统上的运行进程。该命令将输出诸如进程ID、按CPU分配给进程的时间、当前的TTY外壳等信息。
+
+## 参考链接
+- https://www.suse.com/support/kb/doc/?id=000020294
+- https://linux-tips.us/what-you-need-to-know-about-linuxs-magic-sysrq-key/
