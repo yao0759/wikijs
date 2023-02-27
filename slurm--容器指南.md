@@ -1,8 +1,8 @@
 ---
 title: slurm--容器指南
-description: 
+description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出
 published: true
-date: 2023-01-02T14:47:16.399Z
+date: 2023-02-27T03:51:38.469Z
 tags: slurm, container, docker
 editor: markdown
 dateCreated: 2023-01-02T14:47:16.399Z
