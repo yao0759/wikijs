@@ -1,8 +1,8 @@
 ---
 title: slurm--异构性工作支持
-description: 
+description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出
 published: true
-date: 2023-02-27T03:44:27.907Z
+date: 2023-02-27T03:52:25.514Z
 tags: slurm
 editor: markdown
 dateCreated: 2023-01-04T13:57:20.113Z
