@@ -1,14 +1,12 @@
 ---
 title: slurm--核算和资源限制
-description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出
+description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/accounting.shtml
 published: true
-date: 2022-09-15T13:52:34.510Z
+date: 2023-03-19T16:29:10.579Z
 tags: slurm, hpc
 editor: markdown
 dateCreated: 2022-09-15T10:11:48.437Z
 ---
-
-# Slurm--核算和资源限制
 
 ## 概览
 
