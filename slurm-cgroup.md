@@ -2,13 +2,13 @@
 title: Slurm中的cgroup
 description: 
 published: true
-date: 2023-03-19T15:24:42.980Z
+date: 2023-03-19T15:26:42.451Z
 tags: slurm, cgroup
 editor: markdown
 dateCreated: 2023-03-19T15:24:42.980Z
 ---
 
-# Slurm中的cgroup
+# slurm--cgroup
 ## Control Group概述
 Control Group是由内核提供的一种机制，用于分层组织进程，并以可控和可配置的方式沿层级分配系统资源。Slurm可以利用cgroup来限制不同的资源给作业、步骤和任务，并获得关于这些资源的核算。
 
