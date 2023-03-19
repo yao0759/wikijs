@@ -1,8 +1,8 @@
 ---
 title: slurm--高吞吐量计算管理指南
-description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出
+description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/high_throughput.shtml
 published: true
-date: 2023-02-27T03:56:34.646Z
+date: 2023-03-19T15:39:25.346Z
 tags: slurm
 editor: markdown
 dateCreated: 2022-12-30T14:39:18.457Z
