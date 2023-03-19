@@ -1,8 +1,8 @@
 ---
-title: Slurm中的cgroup
+title: slurm--cgroup
 description: 
 published: true
-date: 2023-03-19T15:26:42.451Z
+date: 2023-03-19T15:27:31.019Z
 tags: slurm, cgroup
 editor: markdown
 dateCreated: 2023-03-19T15:24:42.980Z
