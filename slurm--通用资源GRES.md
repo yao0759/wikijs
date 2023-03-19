@@ -1,8 +1,8 @@
 ---
 title: slurm--通用资源调度GRES
-description: 
+description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/gres.shtml
 published: true
-date: 2023-03-19T15:36:52.964Z
+date: 2023-03-19T15:58:37.020Z
 tags: slurm
 editor: markdown
 dateCreated: 2023-03-19T15:36:52.964Z
