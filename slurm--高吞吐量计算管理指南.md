@@ -2,7 +2,7 @@
 title: slurm--高吞吐量计算管理指南
 description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/high_throughput.shtml
 published: true
-date: 2023-03-19T15:45:19.402Z
+date: 2023-03-26T09:35:43.331Z
 tags: slurm
 editor: markdown
 dateCreated: 2022-12-30T14:39:18.457Z
@@ -63,7 +63,7 @@ Slurm已经被验证可以在持续的基础上每秒执行500个简单的批处
     - sched_max_job_start=200
     - sched_min_interval=2000000
 - **SchedulerType：** 如果大多数工作是短期的，那么建议使用`sched/builtin`插件。它以先入先出（FIFO）的方式管理作业队列，并消除了用于按优先级排序的逻辑。
-- **SlurmctldPort：**最好将slurmctld守护进程配置为在一个以上的端口接受传入的消息，以避免传入的消息因超过上述`SOMAXCONN`限制而被操作系统丢弃。当需要支持大量的同时请求时，建议使用两到十个端口。
+- **SlurmctldPort：** 最好将slurmctld守护进程配置为在一个以上的端口接受传入的消息，以避免传入的消息因超过上述`SOMAXCONN`限制而被操作系统丢弃。当需要支持大量的同时请求时，建议使用两到十个端口。
 - **PrologSlurmctld/EpilogSlurmctld：** 在高吞吐量的环境中，不建议使用这两个端口。当它们被启用时，必须为每个作业启动（或作业阵列的任务）创建一个单独的slurmctld线程。目前的架构需要在每个线程中获取一个作业写锁，这是一个昂贵的操作，严重限制了调度器的吞吐量。
 - **SlurmctldDebug：** 更详细的日志记录会降低系统的吞吐量。设置为错误或信息，用于高吞吐量工作负载的常规操作。
 - **SlurmdDebug：** 更详细的日志记录将减少系统的吞吐量。设置为错误或信息，用于具有高吞吐量工作负荷的常规操作。
