@@ -2,7 +2,7 @@
 title: slurm--大型集群管理指南
 description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/big_sys.shtml
 published: true
-date: 2023-03-26T09:31:31.795Z
+date: 2023-03-26T09:33:20.441Z
 tags: slurm, hpc
 editor: markdown
 dateCreated: 2022-09-15T10:52:38.893Z
@@ -21,11 +21,11 @@ dateCreated: 2022-09-15T10:52:38.893Z
 
 ## 系统配置
 
-必须设置三个系统配置参数，以支持大量打开的文件和有大量突发信息的TCP连接。可以使用/etc/rc.d/rc.local或/etc/sysctl.conf脚本进行更改，以便在重启后保留更改。在这两种情况下，你都可以直接将数值写入这些文件（例如，"echo 32832 > /proc/sys/fs/file-max"）。
+必须设置三个系统配置参数，以支持大量打开的文件和有大量突发信息的TCP连接。可以使用/etc/rc.d/rc.local或/etc/sysctl.conf脚本进行更改，以便在重启后保留更改。在这两种情况下，你都可以直接将数值写入这些文件（例如，"`echo 32832 > /proc/sys/fs/file-max`"）。
 
-- /proc/sys/fs/file-max：同时打开的文件的最大数量。我们推荐的限制是至少32832个。
-- /proc/sys/net/ipv4/tcp_max_syn_backlog：被记住的连接请求的最大数量，这些请求仍然没有收到来自连接客户端的确认。对于内存超过128Mb的系统，默认值为1024，对于低内存机器，默认值为128。如果服务器出现过载，可以尝试增加这个数字。
-- /proc/sys/net/core/somaxconn: socket listen()积压的极限，在用户空间称为SOMAXCONN。默认值为128。这个值应该被大幅提高，以支持请求的爆发。例如，为了支持1024个请求的爆发，将somaxconn设置为1024。
+- `/proc/sys/fs/file-max`：同时打开的文件的最大数量。我们推荐的限制是至少32832个。
+- `/proc/sys/net/ipv4/tcp_max_syn_backlog`：被记住的连接请求的最大数量，这些请求仍然没有收到来自连接客户端的确认。对于内存超过128Mb的系统，默认值为1024，对于低内存机器，默认值为128。如果服务器出现过载，可以尝试增加这个数字。
+- `/proc/sys/net/core/somaxconn`: socket listen()积压的极限，在用户空间称为SOMAXCONN。默认值为128。这个值应该被大幅提高，以支持请求的爆发。例如，为了支持1024个请求的爆发，将somaxconn设置为1024。
 
 发送队列长度（txqueuelen）可能也需要用ifconfig命令来修改。对于一个拥有非常大的集群的站点来说，4096的值被发现是很好的（例如，"`ifconfig txqueuelen 4096`"）。
 
