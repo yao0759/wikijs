@@ -1,8 +1,8 @@
 ---
 title: slurm--cgroup v2插件
-description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出
+description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/cgroup_v2.shtml
 published: true
-date: 2023-03-19T15:28:23.247Z
+date: 2023-03-26T09:39:09.187Z
 tags: slurm, hpc
 editor: markdown
 dateCreated: 2022-09-18T10:35:45.968Z
