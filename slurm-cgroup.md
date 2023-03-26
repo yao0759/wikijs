@@ -1,8 +1,8 @@
 ---
 title: slurm--cgroup
-description: 
+description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/cgroups.shtml
 published: true
-date: 2023-03-19T15:27:31.019Z
+date: 2023-03-26T09:38:18.136Z
 tags: slurm, cgroup
 editor: markdown
 dateCreated: 2023-03-19T15:24:42.980Z
