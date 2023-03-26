@@ -2,7 +2,7 @@
 title: slurm--大型集群管理指南
 description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/big_sys.shtml
 published: true
-date: 2023-03-26T09:24:11.127Z
+date: 2023-03-26T09:30:33.323Z
 tags: slurm, hpc
 editor: markdown
 dateCreated: 2022-09-15T10:52:38.893Z
@@ -27,13 +27,13 @@ dateCreated: 2022-09-15T10:52:38.893Z
 - /proc/sys/net/ipv4/tcp_max_syn_backlog：被记住的连接请求的最大数量，这些请求仍然没有收到来自连接客户端的确认。对于内存超过128Mb的系统，默认值为1024，对于低内存机器，默认值为128。如果服务器出现过载，可以尝试增加这个数字。
 - /proc/sys/net/core/somaxconn: socket listen()积压的极限，在用户空间称为SOMAXCONN。默认值为128。这个值应该被大幅提高，以支持请求的爆发。例如，为了支持1024个请求的爆发，将somaxconn设置为1024。
 
-发送队列长度（txqueuelen）可能也需要用ifconfig命令来修改。对于一个拥有非常大的集群的站点来说，4096的值被发现是很好的（例如，"ifconfig txqueuelen 4096"）。
+发送队列长度（txqueuelen）可能也需要用ifconfig命令来修改。对于一个拥有非常大的集群的站点来说，4096的值被发现是很好的（例如，"`ifconfig txqueuelen 4096`"）。
 
 ### 线程/进程限制
 
 在SLES 12 SP2中，有一个新引入的限制（用于Cray系统的CLE 6.0UP04，将于2017年中发布）。随SLES 12 SP2一起发行的systemd版本包含对PIDs cgroup控制器的支持。在新的systemd版本下，每个init脚本或systemd服务默认限制为512个线程/进程。这可能会给大型集群或作业吞吐率较高的系统中的slurmctld和slurmd守护进程带来问题。要增加默认值以外的限制。
 
-- 如果使用systemd服务文件。在 [Service] 部分添加 TasksMax=N。N可以是一个特定的数字，也可以是特殊值无穷大。
+- 如果使用systemd服务文件。在 `[Service]` 部分添加 `TasksMax=N`。N可以是一个特定的数字，也可以是特殊值无穷大。
 
 - 如果使用init脚本。创建文件`/etc/systemd/system/<init script name>.service.d/override.conf`的内容。
 
@@ -42,7 +42,7 @@ dateCreated: 2022-09-15T10:52:38.893Z
     TasksMax=N
   ```
 
-注意：早期版本的systemd不支持PIDs cgroup控制器，因此忽略了TasksMax的设置。
+注意：早期版本的systemd不支持PIDs cgroup控制器，因此忽略了`TasksMax`的设置。
 
 ## 用户限制
 
@@ -50,11 +50,11 @@ dateCreated: 2022-09-15T10:52:38.893Z
 
 ## 节点选择插件(SelectType)
 
-虽然在一个节点内分配单个处理器对于较小的集群来说是很好的，但是在每个节点内跟踪单个处理器和内存的开销会增加很大的开销。为了获得最佳的可扩展性，使用select/linear来分配整个节点，避免select/cons_res。
+虽然在一个节点内分配单个处理器对于较小的集群来说是很好的，但是在每个节点内跟踪单个处理器和内存的开销会增加很大的开销。为了获得最佳的可扩展性，使用`select/linear`来分配整个节点，避免`select/cons_res`。
 
 ## 作业会计收集插件（JobAcctGatherType)
 
-作业核算依赖于每个计算节点上的slurmstepd守护程序定期采样数据。这种数据收集会占用应用程序的计算周期，从而引起所谓的系统噪音。对于大型并行应用来说，这种系统噪音会影响到应用的可扩展性。为了获得最佳的应用性能，最好禁用作业会计（jobacct_gather/none）。考虑使用作业完成记录（JobCompType）进行核算，因为这需要的开销要少得多。如果需要作业核算，将采样间隔配置成相对较大的尺寸（例如JobAcctGatherFrequency=300）。可能需要进行一些实验来处理数据传输中的碰撞问题。
+作业核算依赖于每个计算节点上的slurmstepd守护程序定期采样数据。这种数据收集会占用应用程序的计算周期，从而引起所谓的系统噪音。对于大型并行应用来说，这种系统噪音会影响到应用的可扩展性。为了获得最佳的应用性能，最好禁用作业会计（`jobacct_gather/none`）。考虑使用作业完成记录（`JobCompType`）进行核算，因为这需要的开销要少得多。如果需要作业核算，将采样间隔配置成相对较大的尺寸（例如`JobAcctGatherFrequency=300`）。可能需要进行一些实验来处理数据传输中的碰撞问题。
 
 ## 节点配置
 
@@ -68,7 +68,7 @@ EioTimeout配置参数控制当用户应用程序终止时，srun命令将等待
 
 配置参数SlurmdTimeout决定了slurmctld与slurmd进行常规通信的间隔时间。通信发生在SlurmdTimeout值的一半。这样做的目的是为了确定一个计算节点何时发生故障，从而不应该被分配工作。较长的时间间隔可以减少计算节点上的系统噪音（我们确实在整个集群中同步这些请求，但对应用程序会有一些影响）。对于真正的大型集群，SlurmdTimeout值为120秒或更多是合理的。
 
-如果使用MPICH-2，srun命令将管理用于启动应用程序的密钥对。取决于处理器的速度和结构，密钥对信息的通信可能需要额外的时间。这可以通过在执行srun启动任务之前设置一个环境变量PMI_TIME来完成。PMI_TIME的默认值是500，这是分配给传输每个密钥对的微秒数量。我们用PMI_TIME=4000的值执行了多达16000个任务。
+如果使用MPICH-2，srun命令将管理用于启动应用程序的密钥对。取决于处理器的速度和结构，密钥对信息的通信可能需要额外的时间。这可以通过在执行srun启动任务之前设置一个环境变量PMI_TIME来完成。PMI_TIME的默认值是500，这是分配给传输每个密钥对的微秒数量。我们用`PMI_TIME=4000`的值执行了多达16000个任务。
 
 计算节点上的各个slurmd守护进程只有在启动时或作业的尾声完成时才会向slurmctld守护进程发起消息。当一个分配了大量节点的作业完成后，会导致这些节点上的slurmd守护进程同时向slurmctld守护进程发送非常多的消息。为了将这种消息流量分散到不同的时间，避免消息丢失，可以使用EpilogMsgTime参数。注意，即使消息丢失，也会被重新传送，但这将导致重新分配资源给新作业的延迟。
 
