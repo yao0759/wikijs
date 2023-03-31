@@ -2,7 +2,7 @@
 title: ovirt-engine升级internal CA证书
 description: 
 published: true
-date: 2023-03-29T01:37:42.298Z
+date: 2023-03-31T01:34:00.141Z
 tags: ovirt
 editor: markdown
 dateCreated: 2023-03-29T01:37:42.298Z
@@ -10,7 +10,7 @@ dateCreated: 2023-03-29T01:37:42.298Z
 
 报错信息：
 ```
-
+PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed
 ```
 
 ovirt-engine的证书时间只有一年，一年过后，就会提示证书过期而无法进入web管理界面，这个时候只能给engine更新证书，我们可以使用`engine-setup --offline`去执行更新
