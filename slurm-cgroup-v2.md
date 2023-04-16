@@ -2,7 +2,7 @@
 title: slurm--cgroup v2插件
 description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/cgroup_v2.shtml
 published: true
-date: 2023-03-26T09:39:09.187Z
+date: 2023-04-16T12:30:35.434Z
 tags: slurm, hpc
 editor: markdown
 dateCreated: 2022-09-18T10:35:45.968Z
@@ -11,9 +11,9 @@ dateCreated: 2022-09-18T10:35:45.968Z
 Slurm为cgroup v2的系统提供支持。
 这个cgroup版本的文档可以在kernel.org [Control Cgroup v2文档](https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v2.html)中找到。
 
-cgroup/v2插件是Slurm内部的API，被其他插件使用，如proctrack/cgroup、task/cgroup和jobacctgather/cgroup。本文档概述了它是如何设计的，目的是为了更好地了解当Slurm用这个插件约束资源时系统上发生了什么。
+cgroup/v2插件是Slurm内部的API，被其他插件使用，如`proctrack/cgroup`、`task/cgroup`和`jobacctgather/cgroup`。本文档概述了它是如何设计的，目的是为了更好地了解当Slurm用这个插件约束资源时系统上发生了什么。
 
-在阅读本文档之前，我们假设你已经阅读了[cgroup v2内核文档](https://www.freedesktop.org/wiki/Software/systemd/ControlGroupInterface/)，并且熟悉了大部分的概念和术语。阅读 systemd 的cgroup接口文档同样重要，因为 cgroup/v2 需要与 systemd 进行交互，很多概念会有重叠。最后，建议你了解 [eBPF 技术](https://ebpf.io/what-is-ebpf/)的概念，因为在 cgroup v2 中，设备 cgroup 控制器是基于 eBPF 的。
+在阅读本文档之前，我们假设你已经阅读了[cgroup v2内核文档](https://www.freedesktop.org/wiki/Software/systemd/ControlGroupInterface/)，并且熟悉了大部分的概念和术语。阅读 systemd 的cgroup接口文档同样重要，因为 `cgroup/v2` 需要与 systemd 进行交互，很多概念会有重叠。最后，建议你了解 [eBPF 技术](https://ebpf.io/what-is-ebpf/)的概念，因为在 cgroup v2 中，设备 cgroup 控制器是基于 eBPF 的。
 
 ## 遵循cgroup v2规则
 
@@ -21,36 +21,36 @@ cgroup/v2插件是Slurm内部的API，被其他插件使用，如proctrack/cgrou
 
 ### 自上而下的约束
 
-资源是自上而下分布到树上的，所以只有当父节点在其cgroup.controllers文件中列出并添加到其cgroup.subtree_control中时，一个controller才能在cgroup目录中使用。另外，如果一个或多个子节点启用了控制器，那么在子树上激活的controller不能被禁用。对于Slurm来说，这意味着我们需要通过修改cgroup.subtree_control来对我们的层次结构进行这种管理，并为子代启用所需的controller 。
+资源是自上而下分布到树上的，所以只有当父节点在其`cgroup.controllers`文件中列出并添加到其`cgroup.subtree_control`中时，一个controller才能在cgroup目录中使用。另外，如果一个或多个子节点启用了控制器，那么在子树上激活的controller不能被禁用。对于Slurm来说，这意味着我们需要通过修改`cgroup.subtree_control`来对我们的层次结构进行这种管理，并为子代启用所需的controller 。
 
 ### 没有内部进程约束
 
-除了 root cgroup之外，parent cgroup（真正称为domain cgroup）只有在自己的层次上没有任何进程的情况下才能为其子代启用controllers。这意味着我们可以在 cgroup 目录内创建一个子树，但在写入 cgroup.subtree_control 之前，父 cgroup.procs 中列出的所有 pids 必须被迁移到子树上。这就要求所有进程必须依赖在子树下，因此不可能在非子树目录下有pids。
+除了 root cgroup之外，parent cgroup（真正称为domain cgroup）只有在自己的层次上没有任何进程的情况下才能为其子代启用controllers。这意味着我们可以在 cgroup 目录内创建一个子树，但在写入 `cgroup.subtree_control` 之前，父 cgroup.procs 中列出的所有 pids 必须被迁移到子树上。这就要求所有进程必须依赖在子树下，因此不可能在非子树目录下有pids。
 
 ## 遵循 systemd 规则
 
 systemd是目前使用最广泛的init机制。由于这个原因，Slurm需要找到一种与systemd规则共存的方法。systemd的设计者设想了一个新的规则，叫做 "single-writer"规则，这意味着每个cgroup只有一个所有者，其他人不得向其写入。详情请见 [systemd.io Cgroup Delegation 文档](https://systemd.io/CGROUP_DELEGATION/)。在实践中，这意味着在内核启动时启动的 systemd 守护进程（pid 1）将认为自己是整个 cgroup 树的绝对所有者和单一写入者。这意味着 systemd 希望其他进程不要直接修改任何 cgroup，也不要在 systemd 不知道的情况下创建目录或移动 pids。
 
-有一种方法可以让Slurm顺利工作，那就是在systemd单元中启动Slurm守护进程，并使用特殊的systemd选项Delegate=yes。在systemd单元中启动slurmd，会给Slurm在文件系统中提供一个 "授权 "的cgroup子树，它可以在那里创建目录、移动pids，并管理自己的层次结构。实际情况是，systemd 在其内部数据库中注册了一个新的单元，并将 cgroup 目录与该单元相关联。然后，对于 cgroup 树的任何未来的 "侵入性 "操作，systemd 将有效地忽略 delegated目录。
+有一种方法可以让Slurm顺利工作，那就是在systemd单元中启动Slurm守护进程，并使用特殊的systemd选项`Delegate=yes`。在systemd单元中启动slurmd，会给Slurm在文件系统中提供一个 "`delegated`"的cgroup子树，它可以在那里创建目录、移动pids，并管理自己的层次结构。实际情况是，systemd 在其内部数据库中注册了一个新的单元，并将 cgroup 目录与该单元相关联。然后，对于 cgroup 树的任何未来的 "`intrusive`"操作，systemd 将有效地忽略"`delegated`"目录。
 
 这与cgroup v1中的情况类似，因为这不是一个内核规则，而是一个systemd规则。但这一事实与新的cgroup v2规则相结合，迫使Slurm选择一种与两者共存的设计。
 
 ### 真正的问题：systemd和重启slurmd
 
-在为Slurm设计cgroup/v2插件时，最初的想法是让slurmd在自己的cgroup目录中设置所需的层次结构。然后它将放置作业和步骤，并将较新的分叉slurmstepds移动到相应的目录中。
+在为Slurm设计`cgroup/v2`插件时，最初的想法是让slurmd在自己的cgroup目录中设置所需的层次结构。然后它将放置作业和步骤，并将较新的分叉slurmstepds移动到相应的目录中。
 
 这很好，直到我们需要重新启动slurmd。由于层次结构已经创建，slurmd的重启只是终止了slurmd进程，然后启动了一个新的进程，但它会尝试将新进程直接放在特定组树的根部。由于这个目录现在是一个domain controller，而不是一个子树，systemd 将无法启动守护进程。
 
 由于 systemd 中没有任何机制来处理这种情况，我们只能将 slurmd 和分叉的 slurmstepds 分离到不同的子树目录下。由于 systemd 的设计规则是作为树上的单一写入者，所以不可能从 slurmd 或 slurmstepd 本身做一个 "mkdir"，然后将 stepd 进程移到一个新的独立目录中，这意味着这个目录不受 systemd 控制，会造成问题。
 
-mkdir "工作的唯一方法是在一个 "委托的 "cgroup子树内完成，所以我们需要找到一个 "Delegate=yes "的单元，与slurmd的单元不同，这将保证我们的独立性。所以，我们确实需要为用户工作启动一个新的单元。
+mkdir "工作的唯一方法是在一个 "委托的 "cgroup子树内完成，所以我们需要找到一个 "`Delegate=yes`"的单元，与slurmd的单元不同，这将保证我们的独立性。所以，我们确实需要为用户工作启动一个新的单元。
 
-实际上，在 systemd 中，有两种类型的单元可以获得 "Delegate=yes "的参数，它们与 cgroup 目录直接相关。一种是 "Service"，另一种是 "Scope"。我们对 "Scope"感兴趣。
+实际上，在 systemd 中，有两种类型的单元可以获得 "`Delegate=yes`"的参数，它们与 cgroup 目录直接相关。一种是 "Service"，另一种是 "Scope"。我们对 "Scope"感兴趣。
 
 - Systemd Scope：systemd接收一个pid作为参数，创建一个cgroup目录，然后将提供的pid添加到该目录中。这个范围会一直保留到这个pid消失为止。
 
 
-因为我们想保留任何pid的systemd作用域，所以我们需要调用systemd的dbus接口中的一个特定函数 "abandonScope"。抛弃一个作用域使得该作用域在其cgroup树中有一个活的pid时将继续存活，而不仅仅是初始pid。
+因为我们想保留任何pid的systemd作用域，所以我们需要调用systemd的dbus接口中的一个特定函数 "`abandonScope`"。抛弃一个作用域使得该作用域在其cgroup树中有一个活的pid时将继续存活，而不仅仅是初始pid。
 
 值得注意的是，在与 systemd 主要开发者的讨论中，提出了 RemainAfterExit 的 systemd 参数。这个参数的目的是让单元保持活力，即使它上面的所有进程都消失了。这个选项只对 "Service "有效，对 "Scopes"无效。如果这个选项也能用于Scope，那将是一个非常有趣的选项。他们说，其功能可以扩展到不仅保留单元，而且保留cgroup目录，直到单元被手动终止。目前，单元仍然活着，但无论如何，cgroup都会被清理掉。
 
@@ -233,10 +233,10 @@ apr 06 17:20:14 node1 audit: BPF prog-id=565 op=UNLOAD
 
 ### 开发者选项
 
-- IgnoreSystemd=[yes|no]。该选项用于避免调用dbus来联系systemd。slurmd启动时不会请求创建一个新的作用域，而只会使用 "mkdir "为slurmstepds准备cgroup目录。由于上述原因，不支持在装有 systemd 的生产系统中使用该选项。不过这个选项对没有systemd的系统还是很有用的。
-- IgnoreSystemdOnFailure=[yes|no]。该选项将在不创建systemd "范围 "的情况下，退回到手动模式创建cgroup目录。只有在调用dbus时返回错误时才会这样，就像使用IgnoreSystemd一样。
-- CgroupAutomount=[yes|no]。该选项仅在设置了IgnoreSystemd时使用。如果两者都设置了，slurmd 将检查 /sys/fs/cgroup 中所有可用的控制器，并递归地启用它们，直到达到 slurmd 的水平。这将意味着手动创建的slurmstepd目录也将设置这些控制器。
-- CgroupMountPoint=/path/to/mount/point：在大多数使用cgroup v2的情况下，这个参数不应该被使用，因为/sys/fs/cgroup将是唯一的cgroup目录。
+- `IgnoreSystemd=[yes|no]`。该选项用于避免调用dbus来联系systemd。slurmd启动时不会请求创建一个新的作用域，而只会使用 "mkdir"为slurmstepds准备cgroup目录。由于上述原因，不支持在装有 systemd 的生产系统中使用该选项。不过这个选项对没有systemd的系统还是很有用的。
+- `IgnoreSystemdOnFailure=[yes|no]`。该选项将在不创建systemd "scope"的情况下，退回到手动模式创建cgroup目录。只有在调用dbus时返回错误时才会这样，就像使用IgnoreSystemd一样。
+- `CgroupAutomount=[yes|no]`。该选项仅在设置了`IgnoreSystemd`时使用。如果两者都设置了，slurmd 将检查 `/sys/fs/cgroup` 中所有可用的控制器，并递归地启用它们，直到达到 slurmd 的水平。这将意味着手动创建的slurmstepd目录也将设置这些控制器。
+- `CgroupMountPoint=/path/to/mount/point`：在大多数使用cgroup v2的情况下，这个参数不应该被使用，因为`/sys/fs/cgroup`将是唯一的cgroup目录。
 
 ### 忽略的参数
 
@@ -262,4 +262,4 @@ MinKmemSpace=
 
 ## cgroup v2上的PAM Slurm Adopt插件
 
-pam_slurm_adopt插件与cgroup/v1的API有依赖关系，因为在某些情况下，它依赖于作业的cgroup创建时间来选择哪个作业id应该被加入你的sshd pid。在v2版本中，我们希望消除这种依赖性，不依赖cgroup文件系统，而只是依赖作业ID。这并不能保证 sshd 会话被插入最年轻的作业中，但可以保证它被放入最大的作业 ID 中。由于这个原因，我们消除了插件对特定cgroup层次的依赖。
+`pam_slurm_adopt.plugin`与`cgroup/v1`的API有依赖关系，因为在某些情况下，它依赖于作业的cgroup创建时间来选择哪个作业id应该被加入你的sshd pid。在v2版本中，我们希望消除这种依赖性，不依赖cgroup文件系统，而只是依赖作业ID。这并不能保证 sshd 会话被插入最年轻的作业中，但可以保证它被放入最大的作业 ID 中。由于这个原因，我们消除了插件对特定cgroup层次的依赖。
