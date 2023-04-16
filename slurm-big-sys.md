@@ -2,7 +2,7 @@
 title: slurm--大型集群管理指南
 description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/big_sys.shtml
 published: true
-date: 2023-04-16T13:12:19.433Z
+date: 2023-04-16T13:13:38.610Z
 tags: slurm, hpc
 editor: markdown
 dateCreated: 2022-09-15T10:52:38.893Z
