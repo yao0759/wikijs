@@ -2,7 +2,7 @@
 title: slurm--大型集群管理指南
 description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/big_sys.shtml
 published: true
-date: 2023-03-26T09:33:20.441Z
+date: 2023-04-16T13:12:19.433Z
 tags: slurm, hpc
 editor: markdown
 dateCreated: 2022-09-15T10:52:38.893Z
@@ -27,7 +27,7 @@ dateCreated: 2022-09-15T10:52:38.893Z
 - `/proc/sys/net/ipv4/tcp_max_syn_backlog`：被记住的连接请求的最大数量，这些请求仍然没有收到来自连接客户端的确认。对于内存超过128Mb的系统，默认值为1024，对于低内存机器，默认值为128。如果服务器出现过载，可以尝试增加这个数字。
 - `/proc/sys/net/core/somaxconn`: socket listen()积压的极限，在用户空间称为SOMAXCONN。默认值为128。这个值应该被大幅提高，以支持请求的爆发。例如，为了支持1024个请求的爆发，将somaxconn设置为1024。
 
-发送队列长度（txqueuelen）可能也需要用ifconfig命令来修改。对于一个拥有非常大的集群的站点来说，4096的值被发现是很好的（例如，"`ifconfig txqueuelen 4096`"）。
+发送队列长度（`txqueuelen`）可能也需要用ifconfig命令来修改。对于一个拥有非常大的集群的站点来说，4096的值被发现是很好的（例如，"`ifconfig txqueuelen 4096`"）。
 
 ### 线程/进程限制
 
