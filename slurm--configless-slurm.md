@@ -1,8 +1,8 @@
 ---
-title: 无配置slurm
-description: https://github.com/SchedMD/slurm/blob/master/doc/html/configless_slurm.shtml
+title: slurm--无配置slurm
+description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/configless_slurm.shtml
 published: true
-date: 2023-04-16T12:57:57.959Z
+date: 2023-04-16T12:59:31.997Z
 tags: slurm
 editor: markdown
 dateCreated: 2023-04-16T12:57:57.959Z
