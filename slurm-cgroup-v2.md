@@ -2,7 +2,7 @@
 title: slurm--cgroup v2插件
 description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/cgroup_v2.shtml
 published: true
-date: 2023-04-16T12:30:35.434Z
+date: 2023-04-16T12:37:54.787Z
 tags: slurm, hpc
 editor: markdown
 dateCreated: 2022-09-18T10:35:45.968Z
@@ -64,11 +64,11 @@ mkdir "工作的唯一方法是在一个 "委托的 "cgroup子树内完成，所
 
 有一个已知的问题是，systemd 可以决定清理 cgroup 层次结构，目的是使其与内部数据库相匹配。例如，如果系统中没有 "Delegate=yes "的单元，它就会浏览整个树状结构，并可能停用所有它认为不使用的控制器。在我们的测试中，我们停止了所有带有 "Delegate=yes "的单元，发布了 "systemd reload "或 "systemd reset-failed"，并目睹了cpuset控制器是如何从我们 "手动 "创建的cgroup树深处的目录中消失的。还有其他一些情况，而事实上systemd的开发者和文档都声称他们是树上唯一的单一写入者，这使得SchedMD决定从安全的角度出发，让Slurm与systemd共存。
 
-值得注意的是，我们添加了IgnoreSystemd和IgnoreSystemdOnFailure作为cgroup.conf参数，这将避免与systemd的任何联系，而只是使用普通的 "mkdir "来创建相同的目录结构。这些参数仅用于开发和测试目的。
+值得注意的是，我们添加了`IgnoreSystemd`和`IgnoreSystemdOnFailure`作为`cgroup.conf`参数，这将避免与systemd的任何联系，而只是使用普通的 "mkdir "来创建相同的目录结构。这些参数仅用于开发和测试目的。
 
 ### 没有systemd的Linux发行版会怎样？
 
-Slurm 不支持，但仍然可以工作。唯一的要求是在系统中安装libdbus、ebpf和systemd软件包来编译slurm。然后你可以在cgroup.conf中设置IgnoreSystemd参数，手动创建/sys/fs/cgroup/system.slice/目录。满足这些要求后，Slurm应该可以正常工作。
+Slurm 不支持，但仍然可以工作。唯一的要求是在系统中安装libdbus、ebpf和systemd软件包来编译slurm。然后你可以在`cgroup.conf`中设置`IgnoreSystemd`参数，手动创建`/sys/fs/cgroup/system.slice/`目录。满足这些要求后，Slurm应该可以正常工作。
 
 ## cgroup/v2概述
 
@@ -76,7 +76,7 @@ Slurm 不支持，但仍然可以工作。唯一的要求是在系统中安装li
 
 ### slurmd启动
 
-新系统：slurmd被启动。一些使用cgroup的插件（proctrack、jobacctgather或task），调用cgroup/v2插件的init()函数。这时，slurmd会使用libdbus调用dbus，并创建一个新的systemd "范围"。这个范围的名字是预定义的，根据SYSTEM_CGSLICE下的内部常量SYSTEM_CGSCOPE来设置。基本上，它最终的名字是 "slurmstepd.scope "或 "nodename_slurmstepd.scope"，这取决于Slurm在编译时是否使用了--enable-multiple-slurmd（前缀为节点名称）。与这个范围相关的cgroup目录将被固定为。"/sys/fs/cgroup/system.slice/slurmstepd.scope" 或 "/sys/fs/cgroup/system.slice/nodename_slurmstepd.scope"。
+新系统：slurmd被启动。一些使用cgroup的插件（proctrack、jobacctgather或task），调用cgroup/v2插件的`init()`函数。这时，slurmd会使用libdbus调用dbus，并创建一个新的systemd "scope"。这个范围的名字是预定义的，根据SYSTEM_CGSLICE下的内部常量`SYSTEM_CGSCOPE`来设置。基本上，它最终的名字是 "`slurmstepd.scope`"或 "`nodename_slurmstepd.scope`"，这取决于Slurm在编译时是否使用了`--enable-multiple-slurmd`（前缀为节点名称）。与这个范围相关的cgroup目录将被固定为。"`/sys/fs/cgroup/system.slice/slurmstepd.scope`" 或 "`/sys/fs/cgroup/system.slice/nodename_slurmstepd.scope`"。
 
 该作用域也被 "放弃"，调用dbus的 "abandonScope "方法，其目的在本页前面解释过。
 
@@ -132,11 +132,11 @@ Slurmd像往常一样重新启动。当重新启动时，它将检测 "scope "�
 
 ### slurmstepd启动
 
-当需要创建一个新的步骤时，不管是作为新工作的一部分还是作为现有工作的一部分，slurmd将在它自己的cgroup目录中分叉slurmstepd进程。slurmstepd将立即开始初始化，并且（如果cgroup插件被启用）它将推断范围目录并将自己移到 "等待 "区域，也就是/sys/fs/cgroup/system.slice/slurmstepd_nodename.scope/system目录。它将立即初始化作业和步骤cgroup目录，并将自己移入其中，根据需要设置subtree_controllers。
+当需要创建一个新的步骤时，不管是作为新工作的一部分还是作为现有工作的一部分，slurmd将在它自己的cgroup目录中分叉slurmstepd进程。slurmstepd将立即开始初始化，并且（如果cgroup插件被启用）它将推断范围目录并将自己移到 "waiting"区域，也就是`/sys/fs/cgroup/system.slice/slurmstepd_nodename.scope/system`目录。它将立即初始化作业和步骤cgroup目录，并将自己移入其中，根据需要设置subtree_controllers。
 
 ### 终止和清理
 
-当一个作业结束时，slurmstepd将负责删除所有创建的目录。slurmstepd.scope目录不会被Slurm删除或停止，"slurmstepd infinity "进程也不会被Slurm杀死。
+当一个作业结束时，slurmstepd将负责删除所有创建的目录。`slurmstepd.scope`目录不会被Slurm删除或停止，"slurmstepd infinity"进程也不会被Slurm杀死。
 
 当 slurmd 结束时（因为在支持的系统上，它已经被 systemd 启动了），它的 cgroup 将只是被 systemd 清理。
 
@@ -149,7 +149,7 @@ Slurmd像往常一样重新启动。当重新启动时，它将检测 "scope "�
 图1. Slurm cgroup v2 层次结构。
 左边是slurmd服务，它和systemd一起启动，单独存在于它自己的委托的cgroup中。
 
-右边是slurmstepd的范围，它是cgroup树中的一个目录，也是所有slurmstepd和用户工作的所在。slurmstepd最初被迁移到等待新stepds的区域，系统目录，并且立即，当它初始化作业层次时，它将把自己移到相应的job_x/step_y/slurm_processes目录。
+右边是slurmstepd的范围，它是cgroup树中的一个目录，也是所有slurmstepd和用户工作的所在。slurmstepd最初被迁移到等待新stepds的区域，系统目录，并且立即，当它初始化作业层次时，它将把自己移到相应的`job_x/step_y/slurm_processes`目录。
 
 用户进程将由slurmstepd生成，并移到相应的任务目录中。
 
@@ -190,17 +190,17 @@ Slurmd像往常一样重新启动。当重新启动时，它将检测 "scope "�
                └─113094 /home/lipi/slurm/master/inst/sbin/slurmstepd infinity
 ```
 
-注意：如果在带有--enable-multiple-slurmd的开发系统上运行，slurmstepd.scope将有节点名称的预置。
+注意：如果在带有`--enable-multiple-slurmd`的开发系统上运行，`slurmstepd.scope`将有节点名称的预置。
 
 ## 在任务层面上工作
 
-在用户工作层次中，有一个名为task_special的目录。jobacctgather/cgroup 和 task/cgroup 插件分别在任务层获取统计数据和约束资源。其他插件如proctrack/cgroup只是在步骤层工作。为了统一层次结构并使其适用于所有不同的插件，当一个插件要求将一个pid添加到一个步骤而不是一个任务时，这个pid将被放入一个特殊的目录，称为task_special。如果另一个插件将这个pid添加到一个任务中，它将从那里被迁移。通常情况下，当调用proctrack_g_add_pid向一个步骤添加pid时，proctrack插件会发生这种情况。
+在用户工作层次中，有一个名为task_special的目录。`jobacctgather/cgroup` 和 `task/cgroup` 插件分别在任务层获取统计数据和约束资源。其他插件如`proctrack/cgroup`只是在步骤层工作。为了统一层次结构并使其适用于所有不同的插件，当一个插件要求将一个pid添加到一个步骤而不是一个任务时，这个pid将被放入一个特殊的目录，称为task_special。如果另一个插件将这个pid添加到一个任务中，它将从那里被迁移。通常情况下，当调用`proctrack_g_add_pid`向一个步骤添加pid时，proctrack插件会发生这种情况。
 
 ## 基于eBPF的设备控制器
 
-在cgroup v2中，设备控制器接口已被删除。现在需要创建一个BPF_PROG_TYPE_CGROUP_DEVICE类型的bpf程序，并将其附加到所需的cgroup，而不是通过文件来控制它。这个程序由slurmtepd动态创建，并通过bpf syscall插入内核，它描述了作业、步骤和任务中允许或拒绝的设备。
+在cgroup v2中，设备控制器接口已被删除。现在需要创建一个`BPF_PROG_TYPE_CGROUP_DEVICE`类型的bpf程序，并将其附加到所需的cgroup，而不是通过文件来控制它。这个程序由slurmtepd动态创建，并通过bpf syscall插入内核，它描述了作业、步骤和任务中允许或拒绝的设备。
 
-唯一被管理的设备是gres.conf文件中描述的设备。
+唯一被管理的设备是`gres.conf`文件中描述的设备。
 
 这种程序的插入和移除将被记录在系统日志中。
 
@@ -217,13 +217,13 @@ apr 06 17:20:14 node1 audit: BPF prog-id=565 op=UNLOAD
 
 ## 用不同的cgroup版本运行不同的节点
 
-要使用的cgroup版本完全取决于节点。正因为如此，有可能在不同的节点上用不同的cgroup插件运行同一个作业。配置是在每个节点的cgroup.conf中完成的。
+要使用的cgroup版本完全取决于节点。正因为如此，有可能在不同的节点上用不同的cgroup插件运行同一个作业。配置是在每个节点的`cgroup.conf`中完成的。
 
-不能做的是在不重启和配置节点的情况下交换cgroup.conf中cgroup插件的版本。因为我们不支持混合控制器版本的 "混合 "系统，一个节点必须以一个特定的cgroup版本启动。
+不能做的是在不重启和配置节点的情况下交换`cgroup.conf`中cgroup插件的版本。因为我们不支持混合控制器版本的 "`hybrid`"系统，一个节点必须以一个特定的cgroup版本启动。
 
 ## 配置
 
-在配置方面，设置与之前的cgroup/v1插件没有太大区别，但在cgroup.conf中配置cgroup插件时，必须考虑到以下因素。
+在配置方面，设置与之前的`cgroup/v1`插件没有太大区别，但在`cgroup.conf`中配置cgroup插件时，必须考虑到以下因素。
 
 ### Cgroup 插件
 
@@ -234,7 +234,7 @@ apr 06 17:20:14 node1 audit: BPF prog-id=565 op=UNLOAD
 ### 开发者选项
 
 - `IgnoreSystemd=[yes|no]`。该选项用于避免调用dbus来联系systemd。slurmd启动时不会请求创建一个新的作用域，而只会使用 "mkdir"为slurmstepds准备cgroup目录。由于上述原因，不支持在装有 systemd 的生产系统中使用该选项。不过这个选项对没有systemd的系统还是很有用的。
-- `IgnoreSystemdOnFailure=[yes|no]`。该选项将在不创建systemd "scope"的情况下，退回到手动模式创建cgroup目录。只有在调用dbus时返回错误时才会这样，就像使用IgnoreSystemd一样。
+- `IgnoreSystemdOnFailure=[yes|no]`。该选项将在不创建systemd "scope"的情况下，退回到手动模式创建cgroup目录。只有在调用dbus时返回错误时才会这样，就像使用`IgnoreSystemd`一样。
 - `CgroupAutomount=[yes|no]`。该选项仅在设置了`IgnoreSystemd`时使用。如果两者都设置了，slurmd 将检查 `/sys/fs/cgroup` 中所有可用的控制器，并递归地启用它们，直到达到 slurmd 的水平。这将意味着手动创建的slurmstepd目录也将设置这些控制器。
 - `CgroupMountPoint=/path/to/mount/point`：在大多数使用cgroup v2的情况下，这个参数不应该被使用，因为`/sys/fs/cgroup`将是唯一的cgroup目录。
 
