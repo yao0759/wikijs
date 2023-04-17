@@ -2,7 +2,7 @@
 title: pacemaker中文管理员手册
 description: https://wiki.clusterlabs.org/wiki/Main_Page
 published: true
-date: 2023-04-17T15:50:06.633Z
+date: 2023-04-17T15:51:47.695Z
 tags: pacemaker
 editor: markdown
 dateCreated: 2023-04-17T15:50:06.633Z
@@ -1136,5 +1136,3 @@ virtual-ip:ip=192.168.0.15 \
 database:id=WebData \
 database:install=true
 ```
-
-vless://ba9d0705-89af-4798-a5b4-a72437df5107@:443?encryption=none&security=tls&type=tcp&host=&headerType=none&sni=&flow=xtls-rprx-vision#la3.fishskin.top_VLESS_XTLS/TLS-direct_TCP
