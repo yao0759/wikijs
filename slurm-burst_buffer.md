@@ -2,7 +2,7 @@
 title: slurm--Slurm Burst Buffer 指南
 description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/burst_buffer.shtml
 published: false
-date: 2023-04-29T09:42:18.700Z
+date: 2023-04-29T14:03:32.447Z
 tags: slurm
 editor: markdown
 dateCreated: 2023-04-16T14:04:52.625Z
@@ -120,7 +120,7 @@ Lua脚本可以通过`fork()`和`exec()`系统调用在一个单独的进程中�
 
 每个通过slurmscriptd运行的脚本副本都在一个新的进程中运行，并且打开一个管道（也就是一个文件）来读取脚本的响应。为了避免超过打开进程或打开文件的限制、内存耗尽或超过其他系统的限制，每个 `"stage"`最多允许128个脚本副本同时运行，其中的阶段包括进入阶段、运行前阶段、退出阶段和关闭阶段（关于突发缓冲区阶段的更多信息请参见突发缓冲区状态部分）。这意味着，一次最多可以运行512份`burst_buffer.lua`。如果没有这个限制，作业的吞吐量就会降低，而且测试证实，可能会超过进程开放文件的限制。
 
-**警告：**不要在`burst_buffer.lua`中安装信号处理程序，因为它是由slurmctld直接调用的。如果slurmctld收到一个信号，它可能会试图从`burst_buffer.lua`中运行信号处理程序，甚至在调用`burst_buffer.lua`完成之后，这将导致崩溃。
+**警告：** 不要在`burst_buffer.lua`中安装信号处理程序，因为它是由slurmctld直接调用的。如果slurmctld收到一个信号，它可能会试图从`burst_buffer.lua`中运行信号处理程序，甚至在调用`burst_buffer.lua`完成之后，这将导致崩溃。
 
 ## 突发缓冲区资源
 
@@ -135,10 +135,10 @@ Lua脚本可以通过`fork()`和`exec()`系统调用在一个单独的进程中�
 
 - pools在这个插件中是可选的，可以代表任何东西。
 - `burst_buffer.conf`中的`DefaultPool`在这个插件中不使用。
-- pools是由`burst_buffer.lua`在函数slurm_bb_pools中定义的。如果不需要池子，那么这个函数应该只返回slurm.SUCCESS。如果需要pool，那么这个函数应该返回两个值：（1）slurm.SUCCESS，和（2）一个定义pool的JSON格式的字符串。`burst_buffer.lua.example`中提供了一个例子。目前JSON字符串中的有效字段是：
-  - id - 一个定义池子名称的字符串
-  - quantity - 一个数字，定义了池中的空间数量
-  - granularity - 一个数字，定义了可以从这个池中分配的最低分辨率的空间。如果作业请求的数字不是颗粒度的倍数，那么作业的请求将被四舍五入为颗粒度的最近倍数。例如，如果granularity等于1000，那么可以从这个池子里为一个作业分配的最小空间是1000。如果一个作业从这个池子里请求的单位少于1000，那么这个作业的请求将被四舍五入为1000。
+- pools是由`burst_buffer.lua`在函数`slurm_bb_pools`中定义的。如果不需要池子，那么这个函数应该只返回`slurm.SUCCESS`。如果需要pool，那么这个函数应该返回两个值：（1）`slurm.SUCCESS`，和（2）一个定义pool的JSON格式的字符串。`burst_buffer.lua.example`中提供了一个例子。目前JSON字符串中的有效字段是：
+  - `id` - 一个定义池子名称的字符串
+  - `quantity` - 一个数字，定义了池中的空间数量
+  - `granularity` - 一个数字，定义了可以从这个池中分配的最低分辨率的空间。如果作业请求的数字不是颗粒度的倍数，那么作业的请求将被四舍五入为颗粒度的最近倍数。例如，如果granularity等于1000，那么可以从这个池子里为一个作业分配的最小空间是1000。如果一个作业从这个池子里请求的单位少于1000，那么这个作业的请求将被四舍五入为1000。
 
 
 
@@ -146,20 +146,20 @@ Lua脚本可以通过`fork()`和`exec()`系统调用在一个单独的进程中�
 
 正常的操作模式是批处理作业在批处理脚本中指定突发缓冲区要求。含有特定指令的批处理脚本行（取决于正在使用的插件）将通知Slurm，它应该为该作业运行突发缓冲区阶段。这些行也将描述该作业的突发缓冲区要求。
 
-`salloc`和`srun`命令可以用`-bb`和`-bbf`选项指定突发缓冲区要求。这在命令行作业选项部分有描述。
+`salloc`和`srun`命令可以用`--bb`和`--bbf`选项指定突发缓冲区要求。这在命令行作业选项部分有描述。
 
 所有的突发缓冲区指令都应该在批处理脚本的顶部的注释中指定。它们可以放在任何`#SBATCH`指令之前、之后或穿插在其中。所有突发缓冲区阶段都发生在作业生命周期的特定点上，如概述部分所述；它们不会在作业执行期间发生。例如，所有的持久性突发缓冲区（仅由datawarp插件使用）的创建和删除发生在作业的计算部分发生之前。类似地，你不能在脚本执行的不同点上运行stage-in；突发缓冲区的stage-in在作业开始前进行，stage-out则在作业完成后进行。
 
-对于这两个插件，一个作业可以从一个突发缓冲区资源池中请求一定的空间（大小或容量）。
+对于这两个插件，一个作业可以从一个突发缓冲区资源池中请求一定的空间（大小或capacity）。
 
 - **pool**的规格只是一个字符串，与池的名称相匹配。例如：`pool=pool1`
-- **容量**规格是一个数字，表示从池中需要的空间量。容量规格可以包括后缀 "N"（节点）、"K|KiB"、"M|MiB"、"G|GiB"、"T|TiB"、"P|PiB"（1024的幂）和 "KB"、"MB"、"GB"、"TB "和 "PB"（1000的幂）。注意：通常Slurm把KB、MB、GB、TB、PB、TB单位解释为1024的幂，但是对于Burst Buffers大小规格，Slurm支持IEC/SI两种格式。这是因为CRAY的API支持这两种格式。
+- **capacity**规格是一个数字，表示从池中需要的空间量。capacity规格可以包括后缀 "N"（节点）、"K|KiB"、"M|MiB"、"G|GiB"、"T|TiB"、"P|PiB"（1024的幂）和 "KB"、"MB"、"GB"、"TB "和 "PB"（1000的幂）。注意：通常Slurm把KB、MB、GB、TB、PB、TB单位解释为1024的幂，但是对于Burst Buffers大小规格，Slurm支持IEC/SI两种格式。这是因为CRAY的API支持这两种格式。
 
 在作业提交时，Slurm会执行基本的指令验证，也会在突发缓冲区脚本中运行一个函数。这个函数可以对作业脚本中使用的指令进行验证。如果Slurm确定选项无效，或者如果突发缓冲脚本返回错误，作业将被拒绝，并直接向用户返回错误信息。
 
 请注意，为了支持向后兼容，未被识别的选项可能被忽略（即在某些版本的Slurm识别的选项，但不被其他版本识别的情况下，作业提交不会失败）。如果作业被接受，但后来失败了（例如，一些问题的暂存文件），作业将被保留，其 "原因 "字段将被设置为由底层基础设施提供的错误信息。
 
-用户也可以使用--mail-type=stage_out或--mail-type=all选项，要求在突发缓冲区阶段性淘汰完成后得到电子邮件通知。电子邮件的主题行将是这样的形式。
+用户也可以使用`--mail-type=stage_out`或`--mail-type=all`选项，要求在突发缓冲区阶段性淘汰完成后得到电子邮件通知。电子邮件的主题行将是这样的形式。
 
 ```
 SLURM Job_id=12 Name=my_app Staged Out, StageOut time 00:05:07
@@ -169,10 +169,10 @@ SLURM Job_id=12 Name=my_app Staged Out, StageOut time 00:05:07
 
 ### Datawarp
 
-当使用`burst_buffer/datawarp`插件时，`#DW`（代表 "DataWarp"）的指令用于突发缓冲器指令。关于DataWarp选项的细节，请参考Cray文档。对于DataWarp系统，#BB的指令可以用来创建或删除持久的突发缓冲区存储。
+当使用`burst_buffer/datawarp`插件时，`#DW`（代表 "DataWarp"）的指令用于突发缓冲器指令。关于DataWarp选项的细节，请参考Cray文档。对于DataWarp系统，`#BB`的指令可以用来创建或删除持久的突发缓冲区存储。
 **注意：**使用`#BB`指令是因为该指令是由Slurm解释的，而不是由Cray Datawarp软件解释的。这将在持久性突发缓冲区一节中详细讨论。
 
-对于特定作业的突发缓冲区，需要指定突发缓冲区的容量。如果作业没有指定容量，那么该作业将被拒绝。一个作业也可以指定它想要的资源池；如果作业没有指定一个池，那么将使用burst_buffer.conf中DefaultPool指定的池（如果配置了）。
+对于特定作业的突发缓冲区，需要指定突发缓冲区的容量。如果作业没有指定容量，那么该作业将被拒绝。一个作业也可以指定它想要的资源池；如果作业没有指定一个池，那么将使用`burst_buffer.conf`中`DefaultPool`指定的池（如果配置了）。
 
 下面的作业脚本从默认池中请求突发缓冲区资源，并请求文件被分阶段输入和分阶段输出。
 
@@ -186,7 +186,7 @@ srun application.sh
 
 ### Lua
 
-这个插件的默认指令是#BB_LUA。这个插件使用的指令可以通过设置burst_buffer.conf中的Directive选项来改变。由于指令必须总是以#号开始（在shell脚本中开始一个注释），这个选项应该只指定#号后面的字符串。例如，如果burst_buffer.conf包含以下内容。
+这个插件的默认指令是`#BB_LUA`。这个插件使用的指令可以通过设置`burst_buffer.conf`中的`Directive`选项来改变。由于指令必须总是以`#`号开始（在shell脚本中开始一个注释），这个选项应该只指定`#`号后面的字符串。例如，如果`burst_buffer.conf`包含以下内容。
 
 ```
 Directive=BB_EXAMPLE
@@ -384,7 +384,7 @@ $ scontrol show dwstat configurations
   759 D--T-  807 scratch      stripe      0
   760 CA---  808 scratch      stripe      1
 ```
-  
+
 Lua插件的例子：
 
 这个例子没有做任何有用的事情，它只是展示了这个调用是如何使用的。
@@ -413,4 +413,86 @@ arg1
 arg2
 ```
 ## 预先预订
-  
+
+突发缓冲区资源可以使用BurstBuffer选项放在高级预留中。该参数由四个元素组成：
+
+`[plugin:][pool:]#[units]`
+
+- `plugin` is the burst buffer plugin name, currently either "datawarp" or "lua".
+- `pool` specifies a burst buffer resource pool. If "type" is not specified, the number is a measure of storage space.
+- #(meaning number) should be replaced with a positive integer.
+- `units` has the same format as the suffix of capacity in the Job Submission Commands section.
+
+使用这种保留的作业不限于这些突发缓冲区资源，但可以使用这些保留的资源和任何普遍可用的资源。一些例子如下
+
+```
+$ scontrol create reservation starttime=now duration=60 \
+  users=alan flags=any_nodes \
+  burstbuffer=datawarp:100G
+
+$ scontrol create reservation StartTime=noon duration=60 \
+  users=brenda NodeCnt=8 \
+  BurstBuffer=datawarp:20G
+
+$ scontrol create reservation StartTime=16:00 duration=60 \
+  users=joseph flags=any_nodes \
+  BurstBuffer=datawarp:pool_test:4G
+```
+
+### 作业的依赖性
+
+如果两个作业使用突发缓冲区，并且其中一个依赖另一个（例如，sbatch --dependency=afterok:123 ...），那么第二个作业将不会开始，直到第一个作业完成并且其突发缓冲区滞出完成。如果第二项作业不使用突发缓冲区，但依赖于第一项作业的完成，那么它将不会等待第一项作业的分阶段输出操作完成。第二个作业可以使用 "afterburstbuffer "依赖选项来等待第一个作业的分阶段输出操作完成（例如，sbatch --dependency=afterburstbuffer:123 ...）。
+
+### 突发缓冲区状态和作业状态
+
+这些是不同的可能的突发缓冲区状态：
+
+- pending
+- allocating
+- allocated
+- deleting
+- deleted
+- staging-in
+- staged-in
+- pre-run
+- alloc-revoke
+- running
+- suspended
+- post-run
+- staging-out
+- teardown
+- teardown-fail
+- complete
+
+这些状态出现在`scontrol show job`的输出中的` "BurstBufferState "`字段。这个字段只出现在请求突发缓冲区的作业中。`allocating`、`allocated`、`deleting`和`deleted`的状态只用于持久性突发缓冲区（不用于特定作业的突发缓冲区）。如果在Slurm为作业分配资源和实际启动作业之间，Slurm的选择插件发生故障，就会发生`alloc-revoke`状态。这种情况不应该发生。
+
+1. 当一个作业请求一个突发缓冲区时，作业和突发缓冲区的状态转换是这样的：
+
+2. 作业已提交。作业状态和突发缓冲区状态都是待定的。
+   缓冲区阶段性开始。作业状态：pending，原因：`BurstBufferStageIn`。突发缓冲区状态：`stage-in`。
+3. 当stage-in完成后，该作业有资格被安排（排除任何其他限制）。作业状态：`pending`。突发缓冲区状态：`staged-in`。
+4. 当作业被安排并分配资源时，突发缓冲区预运行阶段开始。作业状态：`running+configuring`。突发缓冲区状态：`pre-run`。
+5. 当预运行完成后，配置标志从作业中被清除，作业可以真正开始运行。作业状态和突发缓冲区状态都在运行。
+6. 当作业完成后（即使它失败了），突发缓冲区的淘汰开始。作业状态：`stage-out`。突发缓冲区状态：`staging-out`。
+7. 当stage-out完成后，拆解开始。作业状态：`complete`。突发缓冲区状态：`teardown`。
+
+有一些情况会改变状态的转换。例子包括：
+
+- 突发缓冲区操作失败：
+
+  - 如果拆解失败，那么突发缓冲区的状态就变为拆解-失败。撕毁将被重试。对于`burst_buffer/lua`插件，在放弃和破坏突发缓冲区之前，拆毁将最多运行3次。
+
+  - 如果`stage-in`或`stage-out`失败，并且在`burst_buffer.conf`中配置了`Flags=teardownFailure`，那么`teardown`将运行。否则，作业被保留，突发缓冲区保持在相同的状态，所以它可以被检查并通过`scancel - hurry`手动销毁。
+
+  - 如果预运行失败，那么作业将被保留，并运行拆解。
+
+- 当一个作业被取消时，该作业的当前突发缓冲区脚本（如果正在运行）被杀死。如果使用了`scancel --hurry`，或者如果作业从未运行过，则跳过`stage-out`，直接进入`teamdown`。否则，阶段性退出开始。
+- 如果slurmctld被停止，Slurm将杀死所有作业的运行中的突发缓冲脚本，并且为每个作业保存突发缓冲状态。当slurmctld重新启动时，对于每个作业，它都会读取突发缓冲区的状态，并执行以下操作之一：
+  - `Pending` - 什么都不做，因为没有杀死突发缓冲区的脚本。
+  - `Staging-in, staged-in` - 运行拆解，等待一小段时间，然后重新启动stage-in。
+  - `Pre-run` - 重新启动预运行。
+  - `Running` - 什么都不做，因为没有杀死突发缓冲区的脚本。
+  - `Post-run, staging-out` - 重新启动post-run。
+  - `Teardown, teardown-fail` - 重启拆解。
+
+注意：还有许多其他的事情没有在这里列出，它们会影响作业的状态。本文件重点关注突发缓冲区，并不试图解决所有可能的作业状态转换。
