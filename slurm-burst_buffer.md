@@ -1,8 +1,8 @@
 ---
 title: slurm--Slurm Burst Buffer 指南
 description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/burst_buffer.shtml
-published: false
-date: 2023-04-29T14:03:32.447Z
+published: true
+date: 2023-04-29T14:05:41.734Z
 tags: slurm
 editor: markdown
 dateCreated: 2023-04-16T14:04:52.625Z
