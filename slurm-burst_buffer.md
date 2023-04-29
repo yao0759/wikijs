@@ -2,7 +2,7 @@
 title: slurm--Slurm Burst Buffer 指南
 description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/burst_buffer.shtml
 published: false
-date: 2023-04-16T14:04:52.625Z
+date: 2023-04-29T09:42:18.700Z
 tags: slurm
 editor: markdown
 dateCreated: 2023-04-16T14:04:52.625Z
@@ -111,7 +111,7 @@ Lua脚本可以通过`fork()`和`exec()`系统调用在一个单独的进程中�
 
 为了解决这种情况，`burst_buffer.lua`被以两种不同的方式调用。
 
-- 从slurmctld调用`slurm_bb_job_process`、`slurm_bb_pools`和`slurm_bb_paths`函数。由于上面的解释，运行这些函数之一的脚本不能被杀死。由于这些函数是在slurmctld持有一些mutexes的情况下被调用的，如果它们的速度很慢，将对slurmctld的性能和响应性造成极大的伤害。因为直接调用这些函数比调用`fork()`来创建一个新进程要快，这被认为是可以接受的权衡。因此，这些函数不能被杀死。
+- 从slurmctld调用`slurm_bb_job_process`、`slurm_bb_pools`和`slurm_bb_paths`函数。由于上面的解释，运行这些函数之一的脚本不能被杀死。由于这些函数是在slurmctld持有一些mutexes的情况下被调用的，如果它们的速度很慢，将对slurmctld的性能和响应性造成极大的伤害。因为直接调用这些函数比调用`fork()`来创建一个新进程要快，这被认为是可以接受的权衡。因此，**这些函数不能被杀死。**
 - `burst_buffer.lua`中的其余函数能够运行更长时间而不产生不利影响。这些函数需要能够被杀死。这些函数是由一个叫做slurmscriptd的轻量级Slurm守护程序调用的。每当这些函数之一需要运行时，slurmctld告诉slurmscriptd运行该函数；然后slurmscriptd调用`fork()`来创建一个新进程，然后调用相应的函数。这就避免了从slurmctld调用`fork()`，同时仍然提供了一种在需要时杀死正在运行的`burst_buffer.lua`副本的方法。因此，这些函数可以被杀死，**如果它们运行的时间超过了`burst_buffer.conf`中配置的适当的超时值，它们将被杀死。**
 
 每个函数的调用方式也记录在burst_buffer.lua.example文件中。
