@@ -1,8 +1,8 @@
 ---
 title: cvmfs排查方法
-description: 
+description: 该文章具体参考https://cvmfs.readthedocs.io/en/stable/cpt-quickstart.html#troubleshooting
 published: true
-date: 2023-04-30T02:34:28.668Z
+date: 2023-04-30T02:40:37.150Z
 tags: cvmfs
 editor: markdown
 dateCreated: 2023-01-06T18:33:38.966Z
