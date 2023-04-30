@@ -2,7 +2,7 @@
 title: slurm--云端调度指南
 description: 翻译自：https://slurm.schedmd.com/elastic_computing.html
 published: true
-date: 2023-04-30T07:14:45.183Z
+date: 2023-04-30T07:50:11.975Z
 tags: slurm
 editor: markdown
 dateCreated: 2023-04-30T07:14:45.183Z
@@ -28,7 +28,7 @@ Slurm的云调度逻辑在很大程度上依赖于现有的节电逻辑。强烈
 
 `ReconfigFlags=KeepPowerSaveSettings`
 
-- 如果设置，"scontrol reconfig "命令将保留SuspendExcNodes、SuspendExcParts和SuspendExcStates的当前状态。
+- 如果设置，"scontrol reconfig"命令将保留SuspendExcNodes、SuspendExcParts和SuspendExcStates的当前状态。
 
 `ResumeFailProgram`
 
