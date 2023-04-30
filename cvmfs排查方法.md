@@ -1,29 +1,32 @@
 ---
 title: cvmfs排查方法
 description: 
-published: false
-date: 2023-01-06T18:33:38.966Z
+published: true
+date: 2023-04-30T02:34:28.668Z
 tags: cvmfs
 editor: markdown
 dateCreated: 2023-01-06T18:33:38.966Z
 ---
 
-In order to check for common misconfigurations in the base setup, run
+为了检查基本设置中的常见错误配置，运行
 
 ```
 cvmfs_config chksetup
 ```
-CernVM-FS gathers its configuration parameter from various configuration files that can overwrite each others settings (default configuration, domain specific configuration, local setup, …). To show the effective configuration for repository.cern.ch, run
+CernVM-FS从不同的配置文件中收集配置参数，这些文件可以覆盖彼此的设置（默认配置、域特定配置、本地设置...）。要显示repository.cern.ch的有效配置，请运行
 ```
 cvmfs_config showconfig repository.cern.ch
 ```
-In order to exclude autofs/automounter as a source of problems, you can try to mount repository.cern.ch manually with the following
+
+为了排除autofs/automounter这个问题的来源，你可以尝试用以下方法手动加载 repository.cern.ch
+
 ```
 mkdir -p /mnt/cvmfs
 mount -t cvmfs repository.cern.ch /mnt/cvmfs
 ```
 
 cvmfs的排查问题流程需要先去区分是客户端还是服务端的问题，还是就是需要结合报错信息去找到可能的原因。
+
 ## 客户端
 假如是首次登陆挂载cvmfs的话，可以检查一下配置文件，通过`cvmfs_config`命令检查配置文件是否有问题。
 ```
@@ -43,17 +46,20 @@ journalctl -xe
 ## 服务端
 
 
-In order to exclude SELinux as a source of problems, you can try mounting after SELinux has been disabled by
+为了排除SELinux是问题的来源，你可以在通过以下方式禁用SELinux后尝试安装
+
 ```
 /usr/sbin/setenforce 0
 ```
-Once the issue has been identified, ensure that the changes are taken by restarting autofs
+
+一旦发现问题，确保通过重启autofs来进行修改
+
 ```
 systemctl restart autofs
 ```
-If the problem is that a repository can be mounted and unmounted but later cannot be remounted, see Remounting and Namespaces/Containers.
+如果问题是一个版本库可以被挂载和卸载，但后来不能被重新挂载，请看重新挂载和命名空间/容器。
 
-In order to exclude a corrupted local cache as a source of problems, run
+为了排除损坏的本地缓存是问题的来源，运行
 ```
 cvmfs_config wipecache
 ```
