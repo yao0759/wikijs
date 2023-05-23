@@ -2,7 +2,7 @@
 title: slurm--工作量特性化密钥（WCKey）
 description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/wckey.shtml
 published: true
-date: 2023-05-23T10:24:10.035Z
+date: 2023-05-23T11:44:02.352Z
 tags: slurm
 editor: markdown
 dateCreated: 2023-04-16T13:18:30.593Z
@@ -12,7 +12,7 @@ dateCreated: 2023-04-16T13:18:30.593Z
 
 WCKey是一种正交的方式，用于对可能不相关的账户进行核算。这在来自不同账户的用户都在同一个项目上工作的情况下很有用。
 
-## slurm(dbd).conf设置
+## `slurm(dbd).conf`设置
 
 在slurm.conf文件的`AccountingStorageEnforce`选项中包括 `"WCKey"`将强制执行每个作业的WCKeys。这意味着只有具有有效WCKeys（之前通过`sacctmgr`添加的WCKeys）的作业才会被允许运行。
 
