@@ -2,7 +2,7 @@
 title: slurm--工作量特性化密钥（WCKey）
 description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/wckey.shtml
 published: true
-date: 2023-04-16T13:22:44.539Z
+date: 2023-05-23T10:23:18.354Z
 tags: slurm
 editor: markdown
 dateCreated: 2023-04-16T13:18:30.593Z
@@ -20,7 +20,7 @@ WCKey是一种正交的方式，用于对可能不相关的账户进行核算。
 
 ## sbatch/salloc/srun
 
-每个提交工具都有`--wckey=`选项，可以为一个作业设置WCKey。`[SBATCH|SALLOC|SLURM]_WCKEY`也可以在环境中设置WCKey。如果没有给出WCKey，作业的WCKey将被设置为用户对集群的默认WCKey，这可以通过`sacctmgr`设置。同样，如果没有指定WCKey，会计记录会附加一个 "*"，表示没有指定WCKey。这对管理员确定一个用户是否指定了他们的WCKey很有用。
+每个提交工具都有`--wckey=`选项，可以为一个作业设置WCKey。`[SBATCH|SALLOC|SLURM]_WCKEY`也可以在环境中设置WCKey。如果没有给出WCKey，作业的WCKey将被设置为用户对集群的默认WCKey，这可以通过`sacctmgr`设置。同样，如果没有指定WCKey，会计记录会附加一个 `'*'`，表示没有指定WCKey。这对管理员确定一个用户是否指定了他们的WCKey很有用。
 
 ## Sacct
 
