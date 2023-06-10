@@ -2,7 +2,7 @@
 title: discourse安装plugin方法
 description: 
 published: true
-date: 2023-06-10T04:01:14.988Z
+date: 2023-06-10T04:08:56.911Z
 tags: discourse
 editor: markdown
 dateCreated: 2022-12-30T15:13:14.281Z
