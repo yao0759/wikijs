@@ -2,7 +2,7 @@
 title: discourse安装plugin方法
 description: 
 published: true
-date: 2022-12-30T15:13:14.281Z
+date: 2023-06-10T03:57:11.540Z
 tags: discourse
 editor: markdown
 dateCreated: 2022-12-30T15:13:14.281Z
@@ -18,7 +18,7 @@ cd /var/discourse
 
 修改app.xml，移动到hooks下
 
-```
+```bash
 vim containers/app.yml
 ......
 hooks:
