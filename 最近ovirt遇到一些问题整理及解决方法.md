@@ -2,7 +2,7 @@
 title: 最近ovirt遇到一些问题整理及解决方法
 description: 
 published: true
-date: 2022-09-03T07:30:42.213Z
+date: 2023-06-12T05:24:29.300Z
 tags: ovirt
 editor: markdown
 dateCreated: 2022-09-03T07:30:42.213Z
@@ -89,4 +89,12 @@ cd /etc/pki/ovirt-engine
 touch serial.txt
 echo "1013" >> serial.txt
 chown ovirt:ovirt serial.txt
+```
+
+## 如何进入virsh管理界面
+
+/etc/ovirt-hosted-engine/virsh_auth.conf这个文件包含了authname和密码
+
+```
+virsh -c qemu:///system?authfile=/etc/ovirt-hosted-engine/virsh_auth.conf
 ```
