@@ -2,11 +2,13 @@
 title: virtiofs性能
 description: 
 published: true
-date: 2023-07-01T14:39:34.778Z
+date: 2023-07-01T14:49:35.397Z
 tags: kvm, virtiofs
 editor: markdown
 dateCreated: 2023-07-01T14:39:34.778Z
 ---
+
+# virtiofs性能
 
 ## 什么是virtiofs
 
@@ -19,9 +21,11 @@ virtiofs是红帽在kata社区提出的一个共享文件系统的解决方案�
 Virtio-fs利用了虚拟机与管理程序共处的优势，避免了与网络文件系统相关的开销。
 
 ## 来看看virtiofs的性能怎么样？
+
 这里测试的host系统版本为rocky 9，guest系统版本为ubuntu 20.04。测试工具选择fio，测试的内容为随机读写。共享的路径为一块3TB的HDD。
 
 host写入性能测试结果：
+
 ```bash
 [root@nas shared]# fio --name=random-write --ioengine=posixaio --rw=randwrite --bs=4k --numjobs=1 --size=4g --iodepth=1 --runtime=60 --time_based --end_fsync=1
 random-write: (g=0): rw=randwrite, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=posixaio, iodepth=1
@@ -61,6 +65,7 @@ Disk stats (read/write):
 ```
 
 host读取性能测试结果：
+
 ```bash
 [root@nas shared]# fio --name=random-read --ioengine=posixaio --rw=randread --bs=4k --numjobs=1 --size=4g --iodepth=1 --runtime=60 --time_based --end_fsync=1
 random-read: (g=0): rw=randread, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=posixaio, iodepth=1
@@ -96,7 +101,9 @@ Run status group 0 (all jobs):
 Disk stats (read/write):
   sdc: ios=9917/6, merge=0/4, ticks=59284/51, in_queue=59372, util=99.85%
 ```
+
 guest写入性能测试结果：
+
 ```bash
 root@guest:/mnt# fio --name=random-write --ioengine=posixaio --rw=randwrite --bs=4k --numjobs=1 --size=4g --iodepth=1 --runtime=60 --time_based --end_fsync=1
 random-write: (g=0): rw=randwrite, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=posixaio, iodepth=1
@@ -131,7 +138,9 @@ Run status group 0 (all jobs):
   WRITE: bw=32.0MiB/s (34.6MB/s), 32.0MiB/s-32.0MiB/s (34.6MB/s-34.6MB/s), io=3397MiB (3562MB), run=102979-102979msec
 
 ```
+
 guest读取性能测试结果，这里的结果很有趣啊，可能是因为缓存的原因，随机读取的结果很好，即便我执行`echo 3 > /proc/sys/vm/drop_caches`后测试也一样，有可能随机读取创建的文件并未真实写入到真实的文件系统下
+
 ```bash
 [root@guest:/mnt# fio --name=random-read --ioengine=posixaio --rw=randread --bs=4k --numjobs=1 --size=4g --iodepth=1 --runtime=60 --time_based --end_fsync=1
 random-read: (g=0): rw=randread, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=posixaio, iodepth=1
@@ -196,10 +205,31 @@ random-read: (groupid=0, jobs=1): err= 0: pid=1730: Sat Jul  1 14:29:51 2023
 Run status group 0 (all jobs):
    READ: bw=76.8MiB/s (80.5MB/s), 76.8MiB/s-76.8MiB/s (80.5MB/s-80.5MB/s), io=4606MiB (4830MB), run=60001-60001msec>)
 ```
+
 重新测试，现在guest下跑测试过程，并同步在guest和host校验创建的测试文件的md5sum，发现md5值校验一致。看来文件已经完全写入到文件系统下了。
+
 ```
 [root@nas shared]# md5sum random-read.0.0
 a8d05ca10efe386534cd457bf6ccb85c  random-read.0.0
 root@cvmfs:~# md5sum /mnt/random-read.0.0
 a8d05ca10efe386534cd457bf6ccb85c  /mnt/random-read.0.0
 ```
+
+我们来看看virtiofs的配置是怎样的
+
+```
+<filesystem type='mount' accessmode='passthrough'>
+      <driver type='virtiofs'/>
+      <source dir='/shared/'/>
+      <target dir='hostshare'/>
+      <address type='pci' domain='0x0000' bus='0x07' slot='0x00' function='0x0'/>
+    </filesystem>
+```
+
+为什么有这样的性能呢，从[libvirt: Sharing files with Virtiofs](https://libvirt.org/kbase/virtiofs.html)可能提供了答案，这个链接中有这么一个说明
+
+> Almost all virtio devices (all that use virtqueues) require access to at least certain portions of guest RAM (possibly policed by DMA). In case of virtiofsd, much like in case of other vhost-user (see https://www.qemu.org/docs/master/interop/vhost-user.html) virtio devices that are realized by an userspace process, this in practice means that QEMU needs to allocate the backing memory for all the guest RAM as shared memory. As of QEMU 4.2, it is possible to explicitly specify a memory backend when specifying the NUMA topology. This method is however only viable for machine types that do support NUMA. As of QEMU 5.0.0 and libvirt 6.9.0, it is possible to specify the memory backend without NUMA (using the so called memobject interface).
+
+也就是说几乎所有的virtio设备（所有使用virtqueues的设备）都需要访问至少某些部分的客户RAM（可能由DMA控制）。对于virtiofsd来说，就像其他由用户空间进程实现的vhost-user virtio设备一样，这实际上意味着QEMU需要为所有的客户RAM分配支持内存作为共享内存。
+
+所以读取文件时，其实访问的可能是内存，这样的测试结果也只可能是内存速度。
