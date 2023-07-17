@@ -2,13 +2,13 @@
 title: slurm--pam_slurm_adopt
 description: 
 published: true
-date: 2023-07-17T14:42:19.080Z
+date: 2023-07-17T14:42:54.932Z
 tags: slurm
 editor: markdown
 dateCreated: 2023-07-17T14:42:19.080Z
 ---
 
-# pam_slurm_adopt
+
 
 该模块的目的是防止用户ssh进入没有运行任务的节点，并跟踪ssh连接和任何其他产生的进程，以进行会计核算，并确保在任务完成后彻底清理任务。该模块通过确定发起ssh连接的作业来实现这一功能。用户的连接被`adopted`到作业的`external`步骤中。
 
