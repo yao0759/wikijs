@@ -2,7 +2,7 @@
 title: slurm--核算和资源限制
 description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/accounting.shtml
 published: true
-date: 2023-11-15T15:45:13.443Z
+date: 2024-06-03T07:01:22.963Z
 tags: slurm, hpc
 editor: markdown
 dateCreated: 2022-09-15T10:11:48.437Z
@@ -60,13 +60,13 @@ sacctmgr add cluster snowflake
 
 目前，SlurmDBD不支持作业完成，但可以直接写入数据库、脚本或平面文件。如果你正在使用核算存储插件运行，使用作业完成插件可能是多余的。如果你想对此进行配置，一些比较重要的参数包括。
 
-- **JobCompHost：**只有在使用数据库时才需要。数据库服务器执行的主机的名称或地址。
-- **JobCompLoc：**只有在使用平面文件时才需要。写入作业完成数据的文件的位置。
-- **JobCompPass：**只有在使用数据库时才需要。连接到数据库的用户的密码。由于密码不能被安全地维护，不建议直接将信息存储在数据库中。
-- **JobCompPort：**只有在使用数据库时才需要。数据库接受通信的网络端口。
-- **JobCompType：**设置为 "jobcomp/mysql "或 "jobcomp/filetxt "的jobcomp插件的类型。
-- **JobCompUser：**只有在使用数据库时才需要。用来连接数据库的用户名。
-- **JobCompParams：**传递任意的文本字符串给作业完成插件。
+- **JobCompHost：** 只有在使用数据库时才需要。数据库服务器执行的主机的名称或地址。
+- **JobCompLoc：** 只有在使用平面文件时才需要。写入作业完成数据的文件的位置。
+- **JobCompPass：** 只有在使用数据库时才需要。连接到数据库的用户的密码。由于密码不能被安全地维护，不建议直接将信息存储在数据库中。
+- **JobCompPort：** 只有在使用数据库时才需要。数据库接受通信的网络端口。
+- **JobCompType：** 设置为 "jobcomp/mysql "或 "jobcomp/filetxt "的jobcomp插件的类型。
+- **JobCompUser：** 只有在使用数据库时才需要。用来连接数据库的用户名。
+- **JobCompParams：** 传递任意的文本字符串给作业完成插件。
 
 ## 构建前的Slurm核算配置
 
@@ -152,39 +152,39 @@ mysql> SHOW TABLE STATUS IN db_name;
 
   **如果没有设置AccountingStorageEnforce（默认行为），作业将根据每个集群上在Slurm中配置的策略来执行。**
 
-- **AccountingStorageExternalHost：**一个逗号分隔的外部slurmdbds列表（<host/ip> [:port] [,...]），用于注册。如果没有给出端口，将使用`AccountingStoragePort`。这允许在外部slurmdbd注册的集群使用`--cluster/-M`客户端命令选项互相通信。如果外部slurmdbd不存在，该集群将把自己添加到外部slurmdbd中。如果外部slurmdbd上已经存在一个非外部集群，slurmctld将忽略向外部slurmdbd的注册。
+- **AccountingStorageExternalHost：** 一个逗号分隔的外部slurmdbds列表（<host/ip> [:port] [,...]），用于注册。如果没有给出端口，将使用`AccountingStoragePort`。这允许在外部slurmdbd注册的集群使用`--cluster/-M`客户端命令选项互相通信。如果外部slurmdbd不存在，该集群将把自己添加到外部slurmdbd中。如果外部slurmdbd上已经存在一个非外部集群，slurmctld将忽略向外部slurmdbd的注册。
 
-- **AccountingStorageHost：**SlurmDBD执行的主机的名称或地址
+- **AccountingStorageHost：** SlurmDBD执行的主机的名称或地址
 
-- **AccountingStoragePass：**如果将SlurmDBD与第二个MUNGE守护进程一起使用，请存储MUNGE用来提供全企业范围内的认证的命名套接字的路径名（即`/var/run/munge/moab.socket.2`） 。否则将使用默认的MUNGE守护程序。
+- **AccountingStoragePass：** 如果将SlurmDBD与第二个MUNGE守护进程一起使用，请存储MUNGE用来提供全企业范围内的认证的命名套接字的路径名（即`/var/run/munge/moab.socket.2`） 。否则将使用默认的MUNGE守护程序。
 
-- **AccountingStoragePort：**SlurmDBD接受通信的网络端口。
+- **AccountingStoragePort：** SlurmDBD接受通信的网络端口。
 
-- **AccountingStorageType：**设置为 `"accounting_storage/slurmdbd"`。
+- **AccountingStorageType：** 设置为 `"accounting_storage/slurmdbd"`。
 
-- **ClusterName：**设置为每个Slurm管理的集群的唯一名称，以便可以识别每个集群的核算记录。
+- **ClusterName：** 设置为每个Slurm管理的集群的唯一名称，以便可以识别每个集群的核算记录。
 
-- **TrackWCKey：**布尔值。如果你想跟踪用户的wckeys（工作量特征键）。Wckey是一种正交的方式，针对可能不相关的账户进行核算。当一个作业运行时，使用`--wckey`选项指定一个值，核算记录将由这个wckey收集。
+- **TrackWCKey：** 布尔值。如果你想跟踪用户的wckeys（工作量特征键）。Wckey是一种正交的方式，针对可能不相关的账户进行核算。当一个作业运行时，使用`--wckey`选项指定一个值，核算记录将由这个wckey收集。
 
 ## SlurmDBD配置
 
 SlurmDBD需要它自己的配置文件，称为 "slurmdbd.conf"。这个文件应该只存在于执行SlurmDBD的计算机上，并且只能由执行SlurmDBD的用户（例如 "slurm"）阅读。这个文件应该被保护起来，防止未经授权的访问，因为它包含了数据库的登录名和密码。参见 `"man slurmdbd.conf "`以获得更完整的配置参数描述。一些比较重要的参数包括。
 
-- **AuthInfo：**如果将SlurmDBD与第二个MUNGE守护进程一起使用，请存储MUNGE用来提供企业范围内的命名套接字的路径名。否则将使用默认的MUNGE守护进程。
-- **AuthType：**定义Slurm组件之间通信的认证方法。建议使用 `"auth/munge"`的值。
-- **DbdHost：**执行Slurm数据库守护程序的机器的名称。这应该是一个没有完整域名的节点名称（例如："lx0001"）。默认为localhost，但应该提供以避免出现警告信息。
-- **DbdPort：**Slurm数据库守护程序（slurmdbd）工作时监听的端口号。默认值是系统建立时的SLURMDBD_PORT。如果没有明确指定，它将被设置为`6819`。这个值必须等于`slurm.conf`文件中的`AccountingStoragePort`参数。
-- **LogFile：**写入Slurm数据库守护程序日志的文件的完全合格的路径名。默认值是无（通过syslog执行日志）。
-- **PluginDir：**确定寻找Slurm插件的地方。这是一个用冒号分隔的目录列表，像PATH环境变量。默认值是在配置时给出的前缀+"/lib/slurm"。
-- **SlurmUser：**slurmdbd守护进程执行的用户名称。这个用户必须存在于执行Slurm数据库守护程序的机器上，并且与执行slurmctld的主机具有相同的UID。为了安全起见，建议使用 "root "以外的用户。默认值是 "root"。这个名字也应该是所有向SlurmDBD报告的集群上的同一个SlurmUser。注意：如果这个用户与为slurmctld设置的用户不同，并且不是root，则必须用`AdminLevel=Admin`将其加入核算，并且必须重新启动slurmctld。
+- **AuthInfo：** 如果将SlurmDBD与第二个MUNGE守护进程一起使用，请存储MUNGE用来提供企业范围内的命名套接字的路径名。否则将使用默认的MUNGE守护进程。
+- **AuthType：** 定义Slurm组件之间通信的认证方法。建议使用 `"auth/munge"`的值。
+- **DbdHost：** 执行Slurm数据库守护程序的机器的名称。这应该是一个没有完整域名的节点名称（例如："lx0001"）。默认为localhost，但应该提供以避免出现警告信息。
+- **DbdPort：** Slurm数据库守护程序（slurmdbd）工作时监听的端口号。默认值是系统建立时的SLURMDBD_PORT。如果没有明确指定，它将被设置为`6819`。这个值必须等于`slurm.conf`文件中的`AccountingStoragePort`参数。
+- **LogFile：** 写入Slurm数据库守护程序日志的文件的完全合格的路径名。默认值是无（通过syslog执行日志）。
+- **PluginDir：** 确定寻找Slurm插件的地方。这是一个用冒号分隔的目录列表，像PATH环境变量。默认值是在配置时给出的前缀+"/lib/slurm"。
+- **SlurmUser：** slurmdbd守护进程执行的用户名称。这个用户必须存在于执行Slurm数据库守护程序的机器上，并且与执行slurmctld的主机具有相同的UID。为了安全起见，建议使用 "root "以外的用户。默认值是 "root"。这个名字也应该是所有向SlurmDBD报告的集群上的同一个SlurmUser。注意：如果这个用户与为slurmctld设置的用户不同，并且不是root，则必须用`AdminLevel=Admin`将其加入核算，并且必须重新启动slurmctld。
 
-- **StorageHost：**定义数据库运行的主机名称，我们将在那里存储数据。理想情况下，这应该是SlurmDBD执行的主机，但也可以是另一台机器。
+- **StorageHost：** 定义数据库运行的主机名称，我们将在那里存储数据。理想情况下，这应该是SlurmDBD执行的主机，但也可以是另一台机器。
 
-- **StorageLoc：**指定写入核算记录的数据库的名称。对于数据库来说，默认的数据库是`slurm_acct_db`。注意名称中不能有'/'，否则将使用默认值。
-- **StoragePass：**定义用于访问数据库的密码，以存储作业核算数据。
-- **StoragePort：**定义数据库的监听端口。
-- **StorageType：**定义核算存储机制。目前唯一可接受的值是 `"accounting_storage/mysql"`。`"accounting_storage/mysql"`这个值表示核算记录应该写到`StorageLoc`参数指定的MySQL或MariaDB数据库中。这个值必须被指定。
-- **StorageUser：**定义我们要连接到数据库的用户名称，以存储工作核算数据。
+- **StorageLoc：** 指定写入核算记录的数据库的名称。对于数据库来说，默认的数据库是`slurm_acct_db`。注意名称中不能有'/'，否则将使用默认值。
+- **StoragePass：** 定义用于访问数据库的密码，以存储作业核算数据。
+- **StoragePort：** 定义数据库的监听端口。
+- **StorageType：** 定义核算存储机制。目前唯一可接受的值是 `"accounting_storage/mysql"`。`"accounting_storage/mysql"`这个值表示核算记录应该写到`StorageLoc`参数指定的MySQL或MariaDB数据库中。这个值必须被指定。
+- **StorageUser：** 定义我们要连接到数据库的用户名称，以存储工作核算数据。
 
 ## MySQL配置
 
