@@ -2,7 +2,7 @@
 title: slurm--核算和资源限制
 description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/accounting.shtml
 published: true
-date: 2024-06-03T07:01:22.963Z
+date: 2024-06-04T06:44:45.526Z
 tags: slurm, hpc
 editor: markdown
 dateCreated: 2022-09-15T10:11:48.437Z
@@ -270,9 +270,9 @@ mysql> create database slurm_acct_db;
 
 有几个工具可以用来处理核算数据，sacct、sacctmgr和sreport。这些工具都是通过SlurmDBD守护程序获取或设置数据。
 
-- **sacct**用于生成正在运行和已经完成的作业的核算报告。
-- **sacctmgr**用于管理数据库中的关联：添加或删除集群，添加或删除用户，等等。
-- sreport用于生成在给定时间段内收集到的各种使用报告。
+- **sacct** 用于生成正在运行和已经完成的作业的核算报告。
+- **sacctmgr** 用于管理数据库中的关联：添加或删除集群，添加或删除用户，等等。
+- **sreport** 用于生成在给定时间段内收集到的各种使用报告。
 
 更多信息请参见每个命令的手册页面。
 
@@ -319,7 +319,7 @@ sacctmgr add user da DefaultAccount=test
 
 当添加或修改一个集群时，这些是sacctmgr的可用选项。
 
-- **Name=**Cluster Name
+- **Name=** Cluster Name
 
 ## 帐户选项
 
