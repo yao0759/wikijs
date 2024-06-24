@@ -2,7 +2,7 @@
 title: slurm--可追踪资源TRES
 description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/tres.shtml
 published: true
-date: 2024-06-24T04:01:50.757Z
+date: 2024-06-24T04:02:22.737Z
 tags: slurm
 editor: markdown
 dateCreated: 2023-03-19T15:31:02.410Z
