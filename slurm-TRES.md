@@ -2,7 +2,7 @@
 title: slurm--可追踪资源TRES
 description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/tres.shtml
 published: true
-date: 2024-06-24T04:03:18.845Z
+date: 2024-06-24T04:05:01.348Z
 tags: slurm
 editor: markdown
 dateCreated: 2023-03-19T15:31:02.410Z
@@ -51,6 +51,8 @@ TRES是一种可以跟踪使用的资源，或用于执行限制。TRES是一个
   ```
   AccountingStorageTRES=gres/gpu,gres/gpu:tesla
   ```
+  
+  注意：设置 `gres/gpu` 也将设置 `gres/gpumem` 和 `gres/gpuutil`。
 
 - PriorityWeightTRES
   以逗号分隔的TRES类型和权重列表，设定每个TRES类型对作业优先级的贡献程度。
