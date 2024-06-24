@@ -2,7 +2,7 @@
 title: slurm--可追踪资源TRES
 description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/tres.shtml
 published: true
-date: 2023-04-16T13:48:57.742Z
+date: 2024-06-24T04:01:50.757Z
 tags: slurm
 editor: markdown
 dateCreated: 2023-03-19T15:31:02.410Z
@@ -18,15 +18,15 @@ TRES是一种可以跟踪使用的资源，或用于执行限制。TRES是一个
 - FS（文件系统）
 - GRES
 - IC (互连)
-- 许可证
+- License
 - Mem (内存)
-- 节点
+- Node
 - Pages
 - VMem (虚拟内存/大小)
 
 计费TRES是根据分区的`TRESBillingWeights`计算的。虽然分区上的TRES权重可以定义为双数，但工作的计费TRES值是以整数存储的。在计算一项工作的公平份额时，情况并非如此，因为该值被视为双数。
 
-有效的`'FS'`TRES 是 "磁盘"（本地磁盘）和 "光泽"。这些主要是为了报告使用情况，而不是限制访问。
+有效的`'FS'`TRES 是 `'disk'`（本地磁盘）和 `'lustre'`。这些主要是为了报告使用情况，而不是限制访问。
 
 有效的`'IC'`TRES是`'OFED'`。这些主要是为了报告使用情况，而不是限制访问。
 
@@ -34,7 +34,7 @@ TRES是一种可以跟踪使用的资源，或用于执行限制。TRES是一个
 
 - AccountingStorageTRES
 
-  用于定义哪些TRES要在系统上被追踪。默认情况下，账单、CPU、能量、内存、节点、FS/磁盘、页面和VMem被跟踪。这些默认的TRES不能被禁用，只能被附加到。下面的例子。
+  用于定义哪些TRES要在系统上被追踪。默认情况下，Billing、CPU、Energy、Memory、Node、FS/disk、Pages和VMem被跟踪。这些默认的TRES不能被禁用，只能被附加到。下面的例子。
 
   ```
   AccountingStorageTRES=gres/craynetwork,license/iop1,bb/cray
