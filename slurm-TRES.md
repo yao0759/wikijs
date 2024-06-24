@@ -2,7 +2,7 @@
 title: slurm--可追踪资源TRES
 description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/tres.shtml
 published: true
-date: 2024-06-24T04:02:22.737Z
+date: 2024-06-24T04:03:18.845Z
 tags: slurm
 editor: markdown
 dateCreated: 2023-03-19T15:31:02.410Z
@@ -41,8 +41,10 @@ TRES是一种可以跟踪使用的资源，或用于执行限制。TRES是一个
   ```
 
   将跟踪billing, cpu, energy, memory, nodes, fs/disk, pages and vmem，以及一个叫做craynetwork的GRES和一个叫做iop1的许可证。它还将跟踪Cray突发缓冲器的使用情况。每当这些资源在集群上被使用，它们就会被记录下来。TRES是在slurmctld启动时自动在数据库中设置的。
+  
 
   需要关联名称的TRES是BB、GRES和License。从上面的例子中可以看出，GRES和License在每个系统上通常是不同的。BB TRES的名字与正在使用的突发缓冲区插件相同。在上面的例子中，我们使用的是Cray的突发缓冲器插件。
+
 
   当包括一个特定的GRES的子类型时，也建议包括它的通用类型，否则只有通用类型的请求不会被计算在内。例如，如果我们想核算`gres/gpu:tesla`，我们也会在类似`srun --gres=gpu:1`的请求中包括`gres/gpu`来核算gpus。
 
