@@ -2,7 +2,7 @@
 title: slurm--可追踪资源TRES
 description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/tres.shtml
 published: true
-date: 2024-06-24T04:05:01.348Z
+date: 2024-06-24T04:05:57.730Z
 tags: slurm
 editor: markdown
 dateCreated: 2023-03-19T15:31:02.410Z
@@ -32,7 +32,7 @@ TRES是一种可以跟踪使用的资源，或用于执行限制。TRES是一个
 
 ## `slurm.conf`设置
 
-- AccountingStorageTRES
+- **AccountingStorageTRES**
 
   用于定义哪些TRES要在系统上被追踪。默认情况下，Billing、CPU、Energy、Memory、Node、FS/disk、Pages和VMem被跟踪。这些默认的TRES不能被禁用，只能被附加到。下面的例子。
 
@@ -54,7 +54,7 @@ TRES是一种可以跟踪使用的资源，或用于执行限制。TRES是一个
   
   注意：设置 `gres/gpu` 也将设置 `gres/gpumem` 和 `gres/gpuutil`。
 
-- PriorityWeightTRES
+- **PriorityWeightTRES**
   以逗号分隔的TRES类型和权重列表，设定每个TRES类型对作业优先级的贡献程度。
 
   ```
@@ -65,7 +65,7 @@ TRES是一种可以跟踪使用的资源，或用于执行限制。TRES是一个
 
   计费TRES不能用于优先级计算，因为这个数字在作业被分配资源后才会产生--因为不同分区的数字会发生变化。
 
-- TRESBillingWeights
+- **TRESBillingWeights**
 
   对于每个分区，这个选项用来定义每个 TRES 类型的计费权重，用于计算作业的使用量。
 
