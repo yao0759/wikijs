@@ -2,7 +2,7 @@
 title: slurm--select plugin设计指南
 description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/select_design.shtml
 published: true
-date: 2024-06-29T06:18:14.377Z
+date: 2024-06-29T06:18:57.111Z
 tags: slurm
 editor: markdown
 dateCreated: 2024-06-29T06:16:14.902Z
