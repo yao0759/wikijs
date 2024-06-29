@@ -1,8 +1,8 @@
 ---
 title: slurm--调度配置指南
-description: 
+description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/sched_config.shtml
 published: true
-date: 2024-06-29T06:30:40.964Z
+date: 2024-06-29T06:33:17.445Z
 tags: slurm
 editor: markdown
 dateCreated: 2024-06-29T06:30:40.964Z
