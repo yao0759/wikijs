@@ -1,8 +1,8 @@
 ---
 title: slurm--JSON Web Tokens (JWT) Authentication 
-description: 
+description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/jwt.shtml
 published: true
-date: 2024-06-28T14:35:33.338Z
+date: 2024-06-29T05:45:50.635Z
 tags: slurm
 editor: markdown
 dateCreated: 2024-06-28T14:35:33.338Z
