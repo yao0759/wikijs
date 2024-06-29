@@ -2,7 +2,7 @@
 title: slurm--核心专用化
 description: slurm中文翻译系列，机翻后纠正了一点，发现其他错误望指出，来源：https://github.com/SchedMD/slurm/blob/master/doc/html/core_spec.shtml
 published: true
-date: 2024-06-29T05:41:15.230Z
+date: 2024-06-29T05:42:51.223Z
 tags: slurm
 editor: markdown
 dateCreated: 2024-06-29T05:39:22.020Z
